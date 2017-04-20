@@ -87,6 +87,7 @@ function Comut() {
     _this.mode = {
         interaction: 'none'
     };
+    
     this.init = function (options) {
         
         
@@ -102,8 +103,12 @@ function Comut() {
         _this.d3widget = d3.select(_this.widget[0]);
 
         var ctrls = $('<div>', { class: 'comut-ctrls' }).appendTo(widget);
+        _this.setData=function(m,d){
+			  processMutationData(m);
+			  processDemographicData(d);
+		  };
         var cfgbutton = $('<button>', { class: 'btn btn-default' }).text('Configure widget').on('click', function () { config.show(); $(this).hide(); }).appendTo(ctrls);
-        var config = $('<div>').appendTo(ctrls).hide();
+        var config = $('<div>',{class:'jscomut-config'}).appendTo(ctrls).hide();
         var mutationFileInfo = $('<div>', { id:'mutation-file-info', class: 'config-group' }).appendTo(config);//.append($('<h3>').text('Genomic data'));
         var demographicsFileInfo = $('<div>', { id:'demographics-file-info', class: 'config-group' }).appendTo(config);//.append($('<h3>').text('Demographic data'));
         //var layoutInfo = $('<div>', { class: 'config-group' }).appendTo(config).append($('<h3>').text('Widget layout options'));
@@ -457,7 +462,7 @@ function Comut() {
             _this.sort();
         }
 
-        return widget;
+        //return widget;
 
         function zoomed() {
             
@@ -488,7 +493,7 @@ function Comut() {
             reader.readAsText(f);
         }
         function processMutationData(d) {
-            var arr = d.trim().split(/\r?\n/).map(function (e, i) {
+            var arr = d.trim().split(/\r\n|[\r\n]/).map(function (e, i) {
                 return e.trim().split(/\s/);
             });
             var headers = arr[0];
