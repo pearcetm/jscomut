@@ -1,5 +1,17 @@
 function Comut() {
     var _this = this;
+    var mutTypeEncoding = {
+	    "wt": { "code": 0, "color": "#D4D4D4", "text": "no alteration" },
+	    "missense": { "code": 1, "color": "#0F8500", "text": "Missense" },
+	    "stop": { "code": 2, "color": "#000000", "text": "Stop gain" },
+	    "fs": { "code": 3, "color": "#5E2700", "text": "Frameshift" },
+	    "inframe": { "code": 4, "color": "#C973FF", "text": "Inframe" },
+	    "splice": { "code": 5, "color": "#F57564", "text": "Splice site" },
+	    "amp": { "code": 6, "color": "#2129FF", "text": "Amplification" },
+	    "del": { "code": 7, "color": "#FF0000", "text": "Deletion / loss" },
+	    "fusion": { "code": 8, "color": "#00BFFF", "text": "fusion" }
+	};
+
     // https://github.com/wbkd/d3-extended
     d3.selection.prototype.moveToFront = function () {
         return this.each(function () {
@@ -87,6 +99,7 @@ function Comut() {
     _this.mode = {
         interaction: 'none'
     };
+    
     this.init = function (options) {
         
         
@@ -102,8 +115,12 @@ function Comut() {
         _this.d3widget = d3.select(_this.widget[0]);
 
         var ctrls = $('<div>', { class: 'comut-ctrls' }).appendTo(widget);
+        _this.setData=function(m,d){
+			  processMutationData(m);
+			  processDemographicData(d);
+		  };
         var cfgbutton = $('<button>', { class: 'btn btn-default' }).text('Configure widget').on('click', function () { config.show(); $(this).hide(); }).appendTo(ctrls);
-        var config = $('<div>').appendTo(ctrls).hide();
+        var config = $('<div>',{class:'jscomut-config'}).appendTo(ctrls).hide();
         var mutationFileInfo = $('<div>', { id:'mutation-file-info', class: 'config-group' }).appendTo(config);//.append($('<h3>').text('Genomic data'));
         var demographicsFileInfo = $('<div>', { id:'demographics-file-info', class: 'config-group' }).appendTo(config);//.append($('<h3>').text('Demographic data'));
         //var layoutInfo = $('<div>', { class: 'config-group' }).appendTo(config).append($('<h3>').text('Widget layout options'));
@@ -326,7 +343,7 @@ function Comut() {
                 })
                 .style('fill', function (d) {
                     //console.log(cScale(d.values[0].value));
-                    return _this.scales.gridC(d.value);
+                    return _this.scales.gridC(d.type);
                 })
                 .on('mouseover', _this.tooltip.show)
                 .on('mouseout', _this.tooltip.hide)
@@ -457,7 +474,7 @@ function Comut() {
             _this.sort();
         }
 
-        return widget;
+        //return widget;
 
         function zoomed() {
             
@@ -488,7 +505,50 @@ function Comut() {
             reader.readAsText(f);
         }
         function processMutationData(d) {
-            var arr = d.trim().split(/\r?\n/).map(function (e, i) {
+        	
+        	var inputGenomicData = d.trim();
+        	var delimiter = '\t';
+        	//Step 1: Parse input genomic data from text box or flat file input (tab delimited) and convert into an array of JSON objects
+		    var inputDataObject = textToJson(inputGenomicData, delimiter);
+		    if (inputDataObject == false) {
+		        return false;
+		    }
+		
+		    //Step 2: get list of unique gene names across the sample dataset
+		    var uniqGeneList = getGeneList(inputDataObject);
+		
+		    //Step 3: order this gene list in descending order of frequency of alterations in a gene
+		    var sortedGeneAltFreq = orderGeneList(uniqGeneList, inputDataObject);
+		
+		    //Step 4: get unique list of samples from the dataset
+		    var uniqSampleList = getSampleList(inputDataObject);
+		
+		    //Step 5: create 2D array containing genomic alteration status of each gene in the dataset for a given sample
+		    var mutMatrix = createSampleMutationArray(inputDataObject, sortedGeneAltFreq, uniqSampleList);
+		
+		    //Step 6: create modified input genomic data list to accomodate genes for a sample that have no alterations
+		    var completeGenomicData = populateNegatives(inputDataObject, uniqSampleList, uniqGeneList);
+		
+		    //Step 7: sort the mutation matrix recursively descending to get sample order
+		    var sortedSampleList = sortMutMatrix(mutMatrix);
+		    
+		    
+
+            _this.data = {};
+            _this.data.sortedGenes = sortedGeneAltFreq;
+            _this.data.genes = sortedGeneAltFreq.map(function(e){ return {key:e[0], }; });
+            _this.data.cells = completeGenomicData;
+            _this.data.sortedSamples = sortedSampleList;
+            _this.data.samples = sortedSampleList.map(function(e){ return {key: e, }; }); 
+            _this.data.mutMatrix = mutMatrix;
+            _this.data.mutMatrixSampleOrder = mutMatrix.map(function(e){return e[e.length-1]; });
+            _this.data.mutMatrixGeneOrder = sortedGeneAltFreq.map(function(e){ return e[0] });
+            
+            _this.data.alteration_count = sortedGeneAltFreq.map(function (e) {
+                return { key: e[0], value: e[1] };
+            });
+            
+            /*var arr = d.trim().split(/\r\n|[\r\n]/).map(function (e, i) {
                 return e.trim().split(/\s/);
             });
             var headers = arr[0];
@@ -534,7 +594,9 @@ function Comut() {
             //_this.data.genes = d3.nest().key(function (d) { return d.gene; }).rollup(function (d) { return d.filter(function (x) { return x.value != 0; }).length; }).entries(arr);
             _this.data.alteration_count = _this.data.genes.map(function (e) {
                 return { key: e.key, value: e.values.filter(function (v) { return v.value !== 0; }).length };
-            });
+            });*/
+            
+            
             setupMutationConfig();
             //configureWidget();
         }
@@ -600,7 +662,7 @@ function Comut() {
             _this.svg.attr('width', '100%').attr('height',h).attr('viewBox', '0 0 '+w+' '+h).attr('preserveAspectRatio','xMinYMin');
             _this.zoomableClip.attr('width', gw).attr('height', gh + dh +g.cellheight + o);
             _this.zoomable.select('.zoom-rect').attr('height', gh).attr('width', gw);
-            _this.scales.gridX = d3.scaleBand().domain(_this.data.samples.map(function (x) { return x.key })).range([0, gw])
+            _this.scales.gridX = d3.scaleBand().domain(_this.data.sortedSamples).range([0, gw])
                                                .paddingInner(_this.options.grid.padding / _this.options.grid.cellwidth);
             _this.scales.gridY = d3.scaleBand().domain(_this.data.genes.map(function (x) { return x.key; })).range([0, gh])
                                                .paddingInner(_this.options.grid.padding / _this.options.grid.cellheight);
@@ -740,21 +802,30 @@ function Comut() {
     }
 
     function sortByGeneOrder() {
+    	//geneOrder is the current order of genes, as sorted by user or algorithmically
         var geneOrder = _this.scales.gridY.domain();
-        _this.data.samples = _this.data.samples.sort(function (a, b) {
+        
+        //_this.data.mutMatrix is a 2d matrix of alteration types- use this to look up whether alterations are present or not
+        var sortedSampleOrder = _this.data.sortedSamples.sort(function (a, b) {
             for (var ii = 0; ii < geneOrder.length; ++ii) {
-                var g = geneOrder[ii];
-                var va = a.values.filter(function(x){return x.gene==g; });
-                var valA = va.length>0? va[0].value != 0 : false;
-                var vb = b.values.filter(function(x){return x.gene==g; });
-                var valB = vb.length>0? vb[0].value != 0 : false;
-                if (valA && !valB) return -1;
-                if (valB && !valA) return 1;
+            		//get indices of sample within mutMatrix 1st dimension
+            		var sampleIndexA = _this.data.mutMatrixSampleOrder.indexOf(a);
+            		var sampleIndexB = _this.data.mutMatrixSampleOrder.indexOf(b);
+            		//get index of gene within mutMatrix 2nd dimension
+            		var g = geneOrder[ii];
+                var geneIndex = _this.data.mutMatrixGeneOrder.indexOf(g)
+             
+                var alterationA = _this.data.mutMatrix[sampleIndexA][geneIndex];
+                var alterationB = _this.data.mutMatrix[sampleIndexB][geneIndex];
+                
+                
+                if (alterationA && !alterationB) return -1;
+                if (alterationB && !alterationA) return 1;
             }
             return 0;
             
         });
-        _this.scales.gridX.domain(_this.data.samples.map(function(x){return x.key; }));
+        _this.scales.gridX.domain(sortedSampleOrder);
     }
     function shuffle(array) {
         var currentIndex = array.length, temporaryValue, randomIndex;
@@ -996,4 +1067,298 @@ function Comut() {
     };
 
     return this;
+    
+    //function sorts samples based on a 2D mutation array for a predetermined order of genes and returns order of samples   
+    function sortMutMatrix(genomicMatrix) {
+        var geneCount = genomicMatrix[0].length;
+
+        var sortedData = genomicMatrix.sort(function (a, b) {
+            i = 0;
+            while (i < geneCount - 1) {
+                if (a[i] != b[i]) {
+                    return d3.descending(a[i], b[i]);
+                    break;
+                }
+                else {
+                    if (i == geneCount - 2) {
+                        return d3.descending(a[i], b[i]);
+                        break;
+                    }
+                }
+
+                i++
+            }
+        });
+
+        return get_sample_order(sortedData);
+    }
+
+    //function to extract sorted sample names from the sorted sample matrix   
+    function get_sample_order(sortedMatrix) {
+        var samples = [];
+        for (var x = 0; x < sortedMatrix.length; x++) {
+            var arrLen = sortedMatrix[x].length;
+            samples.push(sortedMatrix[x][arrLen - 1]);
+        }
+        return samples;
+    }
+
+    //function returns a 2D array for genomic alteration data
+    function createSampleMutationArray(genomicData, geneList, sampleList) {
+        var mutationMatrix = [];
+        var geneListLen = geneList.length;
+
+        sampleList.forEach(function (item, index) {
+            var tempArr = [];
+
+            //filter the genomic data array using sample name
+            tempArr = genomicData.filter(function (value, subIndex) {
+                return value.sample == item;
+            });
+
+            //define the mutType array
+            var mutTypeArr = [];
+
+            //Populate mutType array with default value of 0.
+            for (var i = 0; i < geneListLen; i++) {
+                mutTypeArr.push(0);
+            }
+
+            //add sample name as the last element of the mutType array.
+            mutTypeArr.push(item);
+
+            //iterate over each filtered genomic data item and update the mutType array    
+            tempArr.forEach(function (gData, subindex) {
+                if (gData.gene != "") {
+                    var geneArrayPos = getIndexPos(gData.gene, geneList);
+                    var mutTypeInfo = mutTypeEncoding[gData.type];
+                    mutTypeArr[geneArrayPos] = mutTypeInfo.code;
+                }
+            });
+
+            //add to the mother array
+            mutationMatrix.push(mutTypeArr);
+        });
+
+        return mutationMatrix;
+    }
+
+    //get index for an array position in an array by the value within the sub array
+    function getIndexPos(lookUpValue, array) {
+        for (var i = 0; i < array.length; i++) {
+            if (array[i][0] == lookUpValue.toUpperCase()) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    function populateNegatives(inputData, sampleList, geneList) {
+        var completeData = inputData;
+
+        sampleList.forEach(function (item, index) {
+            var tempArr = [];
+
+            //filter the genomic data array using sample name
+            tempArr = inputData.filter(function (value, subIndex) {
+                return value.sample == item;
+            });
+
+            //define the geneLists
+            var posGeneList = [];
+            var negGeneList = [];
+
+            //iterate over each filtered genomic data item and update the mutType array    
+            posGeneList = tempArr.map(function (gData, subindex) {
+                if (gData.gene != "") {
+                    return gData.gene;
+                }
+            });
+
+            negGeneList = geneList.filter(function (d) {
+                return !posGeneList.includes(d);
+            });
+
+            //iterate through the list of negative genes and add it to the completeData array for a given sample
+            negGeneList.forEach(function (d, i) {
+                var tempObj = {
+                    "sample": item,
+                    "gene": d,
+                    "alteration": "none",
+                    "type": "wt"
+                };
+
+                completeData.push(tempObj);
+            });
+        });
+
+        //remove empty objects from the completeData array
+        completeData = completeData.filter(function (d, i) {
+            if (d.gene != "") {
+                return true;
+            }
+            else {
+                return false;
+            }
+        });
+
+        return completeData;
+    }
+
+    //function returns gene list in descending order of event frequency in a given sample set
+    function orderGeneList(geneList, genomicData) {
+        var geneAltFreq = {};
+
+        //initialize the geneObjectList and set value for each gene frequency to 0
+        geneList.forEach(function (item, index) {
+            geneAltFreq[item] = 0;
+        });
+
+        var sampleGeneArr = [];
+
+        //iterate through json object data and calculate frequency of alterations for each gene
+        genomicData.forEach(function (item, index) {
+            if (item.gene != '') {
+                var count = 0;
+                var sampleGeneText = item.sample + "-" + item.gene;
+                if (sampleGeneArr.indexOf(sampleGeneText) == -1)
+                {
+                    sampleGeneArr.push(sampleGeneText);
+                    count = geneAltFreq[item.gene];
+                    count++;
+                    geneAltFreq[item.gene] = count;
+                }
+            }
+        });
+
+        //sort the json object by descending order of alteration frequency
+        var sortedGeneList = sortJsonObj(geneAltFreq, "desc");
+
+        return sortedGeneList;
+    }
+
+    //function sorts fields in a json object by its values and returns an array of sorted array. sortOrder determines the direction. (values accepted asc, desc)
+    function sortJsonObj(jsonObj, sortOrder) {
+        var retArr = [];
+
+        //convert the json object to array 
+        var retArr = [];
+        for (var item in jsonObj) {
+            retArr.push([item, jsonObj[item]]);
+        }
+
+        //sort this array by alteration frequency
+        retArr.sort(function (a, b) {
+            switch (sortOrder) {
+                case "asc":
+                    return a[1] - b[1];
+                    break;
+
+                case "desc":
+                    return b[1] - a[1];
+                    break;
+            }
+        });
+
+        return retArr;
+    }
+
+    //function returns a unique sample name list from a given dataset
+    function getSampleList(genomicData) {
+        var sampleList = [];
+        var uniqueSampleList = [];
+
+        //get list of all samples from the dataset
+        genomicData.forEach(function (item, index) {
+            sampleList.push(item.sample);
+        });
+
+        //remove duplicates
+        uniqueSampleList = getUniqueElements(sampleList);
+
+        return uniqueSampleList;
+    }
+
+
+
+    //function returns a unique gene list from a given sample set
+    function getGeneList(genomicData) {
+        var geneList = [];
+        var uniqueGeneList = [];
+
+        //get the list of all genes from the dataset
+        genomicData.forEach(function (item, index) {
+            if (item.gene != "") {
+                geneList.push(item.gene);
+            }
+        });
+
+        //remove duplicate items in the array
+        uniqueGeneList = getUniqueElements(geneList);
+
+        return uniqueGeneList;
+    }
+
+
+    //function returns unique elements in a given array
+    function getUniqueElements(dataArray) {
+        var returnArray = [];
+        returnArray = dataArray.filter(function (value, index, arr) {
+            return arr.indexOf(value) == index;
+        });
+        return returnArray;
+    }
+
+    //function to convert delimited data into an array of JSON object
+    function textToJson(tData, delimiter) {
+        //get rows from the data and generate an array of rows
+        //var rows = tData.split('\n');
+        var rows = tData.trim().split(/\r\n|[\r\n]/).map(function (e, i) {
+             return e.trim().split(delimiter);
+         });
+
+        //get column names to generate field names for object
+        //var colNames = rows[0].split(delimiter).join(',').toLowerCase().split(',');
+        var colNames = rows[0].map(function(e){return e.toLowerCase(); });
+
+        //iterate through the remainder of the rows of data and create the array of json object
+        var retInfo = [];
+        for (var i = 1; i < rows.length; i++) {
+            //var rowDataArr = rows[i].split(delimiter);
+            var rowDataArr = rows[i];
+            var jsonObj = { celldata: {} };
+            
+            if (rowDataArr.length == 4) { // if row is empty exclude it
+                for (j = 0; j < colNames.length; j++) {
+                    if (rowDataArr[j] == undefined) { // if a field in a row is empty then put in a blank entry
+                        jsonObj[colNames[j].toString().trim()] = '';
+                    }
+                    else {
+                        if (j == colNames.length - 1) { //for the last column "type" convert the contents to lower case
+                            //check for valid mutation type names
+                            var inputMutType = rowDataArr[j].toString().toLowerCase().trim();
+
+                            if (mutTypeEncoding[inputMutType] == undefined && inputMutType.trim() != '') {
+                                alert('Incorrect mutation type detected. ' + inputMutType);
+                                return false;
+                            }
+                            jsonObj[colNames[j].toString().trim()] = rowDataArr[j].toString().toLowerCase();
+                        }
+                        else {
+                            jsonObj[colNames[j].toString().trim()] = rowDataArr[j].toString();
+                        }
+                        var label = colNames[j][0].toUpperCase() + colNames[j].substring(1);
+                        
+                        jsonObj.celldata[label]=rowDataArr[j].toString();
+                    }
+                }
+                retInfo.push(jsonObj);
+            }
+        }
+        return retInfo;
+    }
+
+
 }
+
+
