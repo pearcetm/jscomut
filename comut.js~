@@ -65,12 +65,10 @@ function Comut() {
             6: '#2129FF', //Amplification - #2129FF (blue)
             7: '#ff0000', //deletion - #ff0000 (red)
             8: '#00BFFF', //Fusion - #00BFFF (pale blue) triangle
-            wt: '#D4D4D4', //No alteration - #D4D4D4 (gray)
             missense: '#0F8500', //Missense - #0F8500 (green)
             stop: '#000000', //Truncating (stop gain) - #000000 (black)
             fs: '#5E2700', //Truncating (frameshift index) - #5E2700 (dark brown)
             indel: '#C973FF', //Inframe indels - #C973FF (purple)
-            inframe: '#C973FF', //Inframe indels - #C973FF (purple)
             splice: '#F57564', //Splice site - #F57564 (orange)
             amp: '#2129FF', //Amplification - #2129FF (blue)
             del: '#ff0000', //deletion - #ff0000 (red)
@@ -78,14 +76,14 @@ function Comut() {
         },
         legend: [
             { colorcode: 1, title: 'Missense' },
-            { colorcode: 2, title: 'Stop gain' },
-            { colorcode: 3, title: 'Frameshift' },
-            { colorcode: 4, title: 'Inframe' },
+            { colorcode: 2, title: 'Truncating (stop gain)' },
+            { colorcode: 3, title: 'Truncating (frameshift)' },
+            { colorcode: 4, title: 'Inframe indel' },
             { colorcode: 5, title: 'Splice site' },
             { colorcode: 6, title: 'Amplification' },
-            { colorcode: 7, title: 'Deletion/loss' },
+            { colorcode: 7, title: 'Deletion' },
             { colorcode: 8, title: 'Fusion' },
-            { colorcode: 0, title: 'No alteration' }
+            { colorcode: 0, title: 'None' }
         ],
         fileSource: 'local',
         fileFields: {
