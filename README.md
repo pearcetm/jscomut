@@ -2,8 +2,8 @@
 jscomut is a javascript widget that creates interactive co-mutation plots in the web browser using d3.js. The widget allows mutation and demographic data to be loaded locally from a text file without uploading to the web, sorted interactively, and exported to a .svg file.
 
 This guide contains information for:
-- [developers](#For-developers): how to add the widget and interact with it using javascript
-- [users](#For-users): how to use the widget to interact with your data
+- [developers](#for-developers): how to add the widget and interact with it using javascript
+- [users](#for-users): how to use the widget to interact with your data
 
 # For developers
 ## Adding the widget to a webpage
