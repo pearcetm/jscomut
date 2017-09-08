@@ -83,53 +83,33 @@ default_options = {
             margins:5,
         },
         
-        //colorcodes: defines the color of the cells representing each type of alteration
-        colorcodes: {
-            0: '#D4D4D4', //No alteration - #D4D4D4 (gray)
-            1: '#0F8500', //Missense - #0F8500 (green)
-            2: '#000000', //Truncating (stop gain) - #000000 (black)
-            3: '#5E2700', //Truncating (frameshift index) - #5E2700 (dark brown)
-            4: '#C973FF', //Inframe indels - #C973FF (purple)
-            5: '#F57564', //Splice site - #F57564 (orange)
-            6: '#2129FF', //Amplification - #2129FF (blue)
-            7: '#ff0000', //deletion - #ff0000 (red)
-            8: '#00BFFF', //Fusion - #00BFFF (pale blue) triangle
-            wt: '#D4D4D4', //No alteration - #D4D4D4 (gray)
-            missense: '#0F8500', //Missense - #0F8500 (green)
-            stop: '#000000', //Truncating (stop gain) - #000000 (black)
-            fs: '#5E2700', //Truncating (frameshift index) - #5E2700 (dark brown)
-            indel: '#C973FF', //Inframe indels - #C973FF (purple)
-            inframe: '#C973FF', //Inframe indels - #C973FF (purple)
-            splice: '#F57564', //Splice site - #F57564 (orange)
-            amp: '#2129FF', //Amplification - #2129FF (blue)
-            del: '#ff0000', //deletion - #ff0000 (red)
-            fusion: '#00BFFF', //Fusion - #00BFFF (pale blue) triangle
-        },
-        
-        //legend: maps numeric codes into textual representation of alteration types
-        legend: [
-            { colorcode: 1, title: 'Missense' },
-            { colorcode: 2, title: 'Stop gain' },
-            { colorcode: 3, title: 'Frameshift' },
-            { colorcode: 4, title: 'Inframe' },
-            { colorcode: 5, title: 'Splice site' },
-            { colorcode: 6, title: 'Amplification' },
-            { colorcode: 7, title: 'Deletion/loss' },
-            { colorcode: 8, title: 'Fusion' },
-            { colorcode: 0, title: 'No alteration' }
+                
+        //legendOrder: defines which order the alterations show up in the legend
+        legendOrder: [
+                'missense',
+	        'stop',
+		'fs',
+		'inframe',
+		'splice',
+		'amp',
+		'del',
+		'fusion',
+		'wt',
         ],
         
-        //fileSource: 'local' - load data from the client filesystem. Not actually used
-        fileSource: 'local',
-        
-        //fileFields: allows using differently-named columns in the data file to be used for defining sample, gene, and
-        //  alteration type.
-        fileFields: {
-            sample: 'sample',
-            gene: 'gene',
-            value: 'type',
-        },
-        
+        //mutTypeEncoding: defines which colors and text go with each type of alteration
+        mutTypeEncoding: {
+	    "wt": { "code": 0, "color": "#D4D4D4", "text": "No alteration" },
+	    "missense": { "code": 1, "color": "#0F8500", "text": "Missense" },
+	    "stop": { "code": 2, "color": "#000000", "text": "Stop gain" },
+	    "fs": { "code": 3, "color": "#5E2700", "text": "Frameshift" },
+	    "inframe": { "code": 4, "color": "#C973FF", "text": "Inframe" },
+	    "splice": { "code": 5, "color": "#F57564", "text": "Splice site" },
+	    "amp": { "code": 6, "color": "#2129FF", "text": "Amplification" },
+	    "del": { "code": 7, "color": "#FF0000", "text": "Deletion/loss" },
+	    "fusion": { "code": 8, "color": "#00BFFF", "text": "Fusion" }
+	},
+                
         //dataInput: data can be loaded using a filepicker or pastebox
         dataInput: {
             filePicker: true,//if true, adds a button to select a file
@@ -194,10 +174,11 @@ First, and this is important: *Your data stays completely in your control.* It d
 Let's get started.
 ## Add your data and pick some configuration options
 1) Click the **Configure widget** button to get started
-2) Select a file with the mutations/alterations:
+2) Select a [file with the mutations/alterations](#genomic-data):
   1) Click the button to choose a file from your computer, or copy-paste your data into the text box.
-3) Do the same for additional demographic data, if desired
-  1) Select which types of data to display, and which colors should go with each value
+3) Do the same for additional [demographic data](#demographic-data), if desired
+  1) Click the button to choose a file from your computer, or copy-paste your data into the text box.
+  2) Select which types of data to display, and which colors should go with each value
 4) Once you're satisfied, click the **Create widget** button.
 
 ## Use the different interaction modes to explore your data
@@ -207,3 +188,32 @@ If the widget is configured to let you automatically sort the data by genes or b
 
 ## Save your graphic to an svg file on your local computer.
 Once you have ordered the data to your liking, you can use the **Create downloadable svg file** button to save your figure as a file on your computer. This process occurs entirely within the browser - even though the file is "downloaded" it is not being downloaded *over the internet*, it is simply being saved from the browser into a stand-alone file.
+
+## Data format
+Data files should be tab-delimited text. 
+
+### Genomic data
+The first row of the file should contain the column names (gene, sample, type, alteration). Each subsequent row defines either:
+1) A sample with a genetic alteration
+2) Only a sample id (for samples with no detected alterations - only one row is needed)
+
+For example: 
+```
+sample      gene      type      alteration
+Case1       braf      missense  V600E
+Case2                                     
+Case3       rb1       fs        c.2657delG
+ ```
+ 
+ All other non-altered data points will be automatically filled in.
+ 
+ ### Demographic data
+ The first row of the file should contain the column names. The only required column is "sample", because this links the demographic data to the genomic data. Other columns can contain any type of desired data. The configuration process allows you to select which columns to use in the plot.
+ 
+ For example: 
+```
+sample      gender      tumor site
+Case1       female      thyroid
+Case2       male        bladder
+Case3       female      lung
+ ```
