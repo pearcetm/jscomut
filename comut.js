@@ -1247,7 +1247,7 @@ function Comut() {
             var rowDataArr = rows[i];
             var jsonObj = { celldata: {} };
             
-            if (rowDataArr.length == 4) { // if row is empty exclude it
+            if (rowDataArr.length > 0) { // if row is empty exclude it
                 for (j = 0; j < colNames.length; j++) {
                     if (rowDataArr[j] == undefined) { // if a field in a row is empty then put in a blank entry
                         jsonObj[colNames[j].toString().trim()] = '';
