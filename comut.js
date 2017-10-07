@@ -688,20 +688,25 @@ function Comut() {
             		}
             		
             		return 'translate(' + x + ',' + y + ')';
-            })
-            .attr('width',function(d){
-                return _this.scales.gridX.bandwidth();
-            });
+            }).each(function(d,i) {
+            		var children = d3.selectAll(this.childNodes);
+            		children.attr('width',_this.scales.gridX.bandwidth());
+            	});
+            
         _this.demographics.selectAll('.cell')
             .transition()
             .duration(duration)
             .attr('y', function (d) {
                 var e = d3.select(this);
-                return e.classed('dragging-y')? e.attr('y') : _this.scales.demographicsY(d.fieldname);
+                var y = e.classed('dragging-y')? e.attr('y') : _this.scales.demographicsY(d.fieldname);
+                e.attr('gy',y);
+                return y;
             })
             .attr('x', function (d) {
                 var e = d3.select(this);
-                return e.classed('dragging-x') ? e.attr('x') : _this.scales.gridX(d.sample);
+                var x = e.classed('dragging-x') ? e.attr('x') : _this.scales.gridX(d.sample);
+                e.attr('gx',x);
+                return x;
             })
             .attr('width', function (d) {
                 return _this.scales.gridX.bandwidth();
@@ -709,24 +714,19 @@ function Comut() {
         _this.zoomable.select('.zoom-rect')
             .attr('x', _this.scales.gridX.range()[0])
             .attr('width', _this.scales.gridX.range()[1] - _this.scales.gridX.range()[0]);
-        _this.bar.selectAll('.gene')
+        _this.bar.selectAll('.gene:not(.dragging-y)')
             .transition()
             .duration(duration)
-            .attr('x', 0)
-            .attr('y', function (d) {
-                var e = d3.select(this);
-                return e.classed('dragging-y') ? e.attr('y') : 0;
-            })
             .attr('transform', function (d) {
                 var e = d3.select(this);
-                return e.classed('dragging-y') ? e.attr('transform') : 'translate(-' + _this.scales.barX(d.value) + ',' + _this.scales.gridY(d.key) + ')';
+                return 'translate(-' + _this.scales.barX(d.value) + ',' + _this.scales.gridY(d.key) + ')';
             });
-        _this.geneLegend.selectAll('.gene')
+        _this.geneLegend.selectAll('.gene:not(.dragging-y)')
             .transition()
             .duration(duration)
             .attr('y', function (d) {
                 var e = d3.select(this);
-                return e.classed('dragging-y') ? e.attr('y') : _this.scales.gridY(d.key) + _this.scales.gridY.bandwidth() / 2;
+                return _this.scales.gridY(d.key) + _this.scales.gridY.bandwidth() / 2;
             })
         _this.sampleLegend.selectAll('.sample')
             .transition()
@@ -838,19 +838,37 @@ function Comut() {
               y = parseFloat(e.attr('gy')) + dy;
            
                     
-        d3.selectAll('g.cell.dragging-y').attr('transform', function (d) {
+        _this.grid.selectAll('.dragging-y').attr('transform', function (d) {
             var e = d3.select(this);
             var x = parseFloat(e.attr('gx'));
             var y = parseFloat(e.attr('gy'));
             e.attr('gy',y+dy);
             return 'translate(' + (x) + ',' +(y+dy) + ')';
         });
+        _this.grid.selectAll('g.cell.dragging-x').attr('transform', function (d) {
+        	   var e = d3.select(this);
+            var x = parseFloat(e.attr('gx'));
+            var y = parseFloat(e.attr('gy'));
+            e.attr('gx',x+dx);
+            return 'translate(' + (x + dx) + ',' +y + ')';
+        });
+        _this.demographics.selectAll('.dragging-y').attr('y', function (d) {
+            var e = d3.select(this);
+            var x = parseFloat(e.attr('gx'));
+            var y = parseFloat(e.attr('gy'));
+            e.attr('gy',y+dy);
+            return y+dy;
+        });
+        _this.demographics.selectAll('.dragging-x').attr('x', function (d) {
+            var e = d3.select(this);
+            var x = parseFloat(e.attr('gx'));
+            var y = parseFloat(e.attr('gy'));
+            e.attr('gx',x+dx);
+            return x+dx;
+        });
 		 _this.sampleLegend.selectAll('.sample.dragging-x')
 		 	.attr('gx',x)
 		 	.attr('transform','translate('+x+',0)');
-        d3.selectAll('rect.dragging-x').attr('x', function (d) {
-            return parseFloat(d3.select(this).attr('x')) + dx;
-        });
         _this.bar.selectAll('.gene.dragging-y')
         	.attr('transform',function(d){
         		var e = d3.select(this);
@@ -859,13 +877,7 @@ function Comut() {
         	});
         _this.geneLegend.selectAll('.gene.dragging-y')
         	.attr('y',y+ _this.scales.gridY.bandwidth() / 2);	
-        d3.selectAll('g.cell.dragging-x').attr('transform', function (d) {
-        	   var e = d3.select(this);
-            var x = parseFloat(e.attr('gx'));
-            var y = parseFloat(e.attr('gy'));
-            e.attr('gx',x+dx);
-            return 'translate(' + (x + dx) + ',' +y + ')';
-        });
+        
                     
         
         var X = _this.scales.gridX.domain().sort(function (a, b) {
