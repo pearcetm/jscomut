@@ -1,17 +1,7 @@
 function Comut() {
     var _this = this;
-    var mutTypeEncoding = {
-	    "wt": { "code": 0, "color": "#D4D4D4", "text": "no alteration" },
-	    "missense": { "code": 1, "color": "#0F8500", "text": "Missense" },
-	    "stop": { "code": 2, "color": "#000000", "text": "Stop gain" },
-	    "fs": { "code": 3, "color": "#5E2700", "text": "Frameshift" },
-	    "inframe": { "code": 4, "color": "#C973FF", "text": "Inframe" },
-	    "splice": { "code": 5, "color": "#F57564", "text": "Splice site" },
-	    "amp": { "code": 6, "color": "#2129FF", "text": "Amplification" },
-	    "del": { "code": 7, "color": "#FF0000", "text": "Deletion / loss" },
-	    "fusion": { "code": 8, "color": "#00BFFF", "text": "fusion" }
-	};
-
+    var mutTypeEncoding = {}; //will be set during initialization, but declare here for scope.
+	
     // https://github.com/wbkd/d3-extended
     d3.selection.prototype.moveToFront = function () {
         return this.each(function () {
@@ -54,43 +44,30 @@ function Comut() {
         },
         innerLayout:{
             margins:5,
-        },
-        colorcodes: {
-            0: '#D4D4D4', //No alteration - #D4D4D4 (gray)
-            1: '#0F8500', //Missense - #0F8500 (green)
-            2: '#000000', //Truncating (stop gain) - #000000 (black)
-            3: '#5E2700', //Truncating (frameshift index) - #5E2700 (dark brown)
-            4: '#C973FF', //Inframe indels - #C973FF (purple)
-            5: '#F57564', //Splice site - #F57564 (orange)
-            6: '#2129FF', //Amplification - #2129FF (blue)
-            7: '#ff0000', //deletion - #ff0000 (red)
-            8: '#00BFFF', //Fusion - #00BFFF (pale blue) triangle
-            missense: '#0F8500', //Missense - #0F8500 (green)
-            stop: '#000000', //Truncating (stop gain) - #000000 (black)
-            fs: '#5E2700', //Truncating (frameshift index) - #5E2700 (dark brown)
-            indel: '#C973FF', //Inframe indels - #C973FF (purple)
-            splice: '#F57564', //Splice site - #F57564 (orange)
-            amp: '#2129FF', //Amplification - #2129FF (blue)
-            del: '#ff0000', //deletion - #ff0000 (red)
-            fusion: '#00BFFF', //Fusion - #00BFFF (pale blue) triangle
-        },
-        legend: [
-            { colorcode: 1, title: 'Missense' },
-            { colorcode: 2, title: 'Truncating (stop gain)' },
-            { colorcode: 3, title: 'Truncating (frameshift)' },
-            { colorcode: 4, title: 'Inframe indel' },
-            { colorcode: 5, title: 'Splice site' },
-            { colorcode: 6, title: 'Amplification' },
-            { colorcode: 7, title: 'Deletion' },
-            { colorcode: 8, title: 'Fusion' },
-            { colorcode: 0, title: 'None' }
+        },        
+        legendOrder: [
+                'missense',
+	        'stop',
+		'fs',
+		'inframe',
+		'splice',
+		'amp',
+		'del',
+		'fusion',
+		'wt',
         ],
-        fileSource: 'local',
-        fileFields: {
-            sample: 'sample',
-            gene: 'gene',
-            value: 'type',
-        },
+	mutTypeEncoding: {
+	    "wt": { "code": 0, "color": "#D4D4D4", "text": "No alteration" },
+	    "missense": { "code": 1, "color": "#0F8500", "text": "Missense" },
+	    "stop": { "code": 2, "color": "#000000", "text": "Stop gain" },
+	    "fs": { "code": 3, "color": "#5E2700", "text": "Frameshift" },
+	    "inframe": { "code": 4, "color": "#C973FF", "text": "Inframe" },
+	    "splice": { "code": 5, "color": "#F57564", "text": "Splice site" },
+	    "amp": { "code": 6, "color": "#2129FF", "text": "Amplification" },
+	    "del": { "code": 7, "color": "#FF0000", "text": "Deletion/loss" },
+	    "fusion": { "code": 8, "color": "#00BFFF", "text": "Fusion" }
+	},
+        
         dataInput: {
             filePicker: true,//if true, adds a button to select a file
             pasteBox:true,//if true, adds a textinput for copy/paste
@@ -105,7 +82,8 @@ function Comut() {
         
         _this.options = $.extend(true, {}, _this.default_options, options);
         var options = _this.options;
-
+	mutTypeEncoding = options.mutTypeEncoding;
+	    
         if (options.target && $(options.target).length ==1 ) {
             _this.widget = $(options.target);
         }
@@ -123,8 +101,8 @@ function Comut() {
         var config = $('<div>',{class:'jscomut-config'}).appendTo(ctrls).hide();
         var mutationFileInfo = $('<div>', { id:'mutation-file-info', class: 'config-group' }).appendTo(config);//.append($('<h3>').text('Genomic data'));
         var demographicsFileInfo = $('<div>', { id:'demographics-file-info', class: 'config-group' }).appendTo(config);//.append($('<h3>').text('Demographic data'));
-        //var layoutInfo = $('<div>', { class: 'config-group' }).appendTo(config).append($('<h3>').text('Widget layout options'));
-        if (options.dataInput.filePicker == true) {
+         
+	if (options.dataInput.filePicker == true) {
             $('<label>', { for: 'mfile' }).text('Select mutation file').appendTo(mutationFileInfo);
             _this.filePickerM = $('<input>', { type: 'file', class: 'comut-file-picker', id: 'mfile' }).appendTo(mutationFileInfo).on('change', function (e) {
                 loadMutationFile(e);
@@ -140,7 +118,7 @@ function Comut() {
                     clipboardData = e.originalEvent.clipboardData || window.originalEvent.clipboardData;
                     pastedData = clipboardData.getData('text');
                     processMutationData(pastedData);
-                    //drawData();
+                     
                     $(this).val('');
                     return false;
                 });
@@ -149,7 +127,7 @@ function Comut() {
                     clipboardData = e.originalEvent.clipboardData || window.originalEvent.clipboardData;
                     pastedData = clipboardData.getData('text');
                     processDemographicData(pastedData);
-                    //drawData();
+                     
                     $(this).val('');
                     return false;
                 });
@@ -209,11 +187,7 @@ function Comut() {
           .offset([-10, 0])
           .html(function (d) {
               var div = $('<div>');
-              //$('<span>', { class: 'tooltip-key' }).appendTo(div).text('Sample');
-              //$('<span>', { class: 'tooltip-value' }).appendTo(div).text(d.sample);
-              //$('<br>').appendTo(div);
-              //$('<span>', { class: 'tooltip-key' }).appendTo(div).text('Gene');
-              //$('<span>', { class: 'tooltip-value' }).appendTo(div).text(d.gene);
+              
               var celldata = d.celldata;
               if (!celldata) {
                   celldata = { 'Sample': d.sample, 'Gene': d.gene };
@@ -279,7 +253,6 @@ function Comut() {
             .attr('stroke', 'none')
             .attr('fill','blue')
             .attr('fill-opacity',0.0);
-//            .call(_this.zoom);
 
         _this.bar = _this.svg
             .append('g')
@@ -443,16 +416,14 @@ function Comut() {
                     return 'translate(0,' + (_this.scales.demographicsY(d)) + ')';
                 })
                 .each(function (d, i, g) {
-                    //console.log(d, i, g[i]);
+                     
                     var offset = g[i].getBoundingClientRect().left;
                     d3.select(g[i]).call(_this.scales.demoC[d].legend);
                     d3.select(g[i])
                         .selectAll('.cell').each(function (d, i, g) {
                             var e = d3.select(g[i]);
                             var t = getTranslation(e.attr('transform'));
-                            var current_left = g[i].getBoundingClientRect().left;
-                            //var left = Math.max(offset, i > 0 ? g[i - 1].getBoundingClientRect().right + 2 : offset);
-                            //e.attr('transform', 'translate(' + (t[0] + left - current_left) + ',' + t[1] + ')');
+                            var current_left = g[i].getBoundingClientRect().left;			    
                             var left = i > 0 ? g[i - 1].getBoundingClientRect().right + 10 : offset;
                             e.attr('transform', 'translate(' + (t[0] + left - current_left) + ',' + 0 + ')');
                         });
@@ -474,18 +445,15 @@ function Comut() {
             _this.sort();
         }
 
-        //return widget;
-
         function zoomed() {
             
             var t = d3.event.transform;
             _this.scales.gridX = rescaleOrdinalX(_this.scales.gridX, t);
             draw(0);
-            //console.log('zoom!');
+             
         }
 
         function loadMutationFile(e) {
-            //console.log($(e.target).val());
             var f = e.target.files[0];
             if (!f) return;
             var reader = new FileReader();
@@ -495,7 +463,6 @@ function Comut() {
             reader.readAsText(f);
         }
         function loadDemographicsFile(e) {
-            //console.log($(e.target).val());
             var f = e.target.files[0];
             if (!f) return;
             var reader = new FileReader();
@@ -548,57 +515,7 @@ function Comut() {
                 return { key: e[0], value: e[1] };
             });
             
-            /*var arr = d.trim().split(/\r\n|[\r\n]/).map(function (e, i) {
-                return e.trim().split(/\s/);
-            });
-            var headers = arr[0];
-            //var fields = Object.keys(options.fileFields);
-            var fields = {};
-            $.each(options.fileFields, function (k, v) {
-                fields[v] = k;
-            })
-            var fieldMap = {};
-            headers.forEach(function (e, i) { fieldMap[i] = e.toLowerCase(); });
-            arr = arr.filter(function (e, i) {
-                return i > 0;
-            }).map(function (e, i) {
-                var row = {
-                    celldata: {}
-                };
-
-                for (var ii = 0; ii < e.length; ++ii) {
-                    if (fields[fieldMap[ii]]) row[fields[fieldMap[ii]]] = e[ii];
-                    row.celldata[headers[ii]] = e[ii];
-                }
-                return row;
-            });
-
-            _this.data = {};
-            _this.data.samples = d3.nest().key(function (d) { return d.sample; }).entries(arr);
-            _this.data.genes = d3.nest().key(function (d) { return d.gene; }).entries(arr.filter(function(d){return d.gene;}) );
-            _this.data.genes.forEach(function (gene, index) {
-                _this.data.genes[index].values = d3.nest().key(function (d) { return d.sample; }).entries(gene.values);
-            });
-            arr = arr.filter(function (g) { return g.gene; });//remove rows that were empty placeholders for samples with no alterations
-
-            
-            _this.data.samples.map(function (x) { return x.key; }).forEach(function (sample) {
-                _this.data.genes.map(function (x) { return x.key; }).forEach(function (gene) {
-                    var cell = arr.filter(function (x) { return x.sample == sample && x.gene == gene; });
-                    if (cell.length == 0) arr.push({ sample: sample, gene: gene, value: 0 });
-                });
-            });
-
-            _this.data.cells = arr;
-            _this.data.samples = d3.nest().key(function (d) { return d.sample; }).entries(arr);
-            //_this.data.genes = d3.nest().key(function (d) { return d.gene; }).rollup(function (d) { return d.filter(function (x) { return x.value != 0; }).length; }).entries(arr);
-            _this.data.alteration_count = _this.data.genes.map(function (e) {
-                return { key: e.key, value: e.values.filter(function (v) { return v.value !== 0; }).length };
-            });*/
-            
-            
             setupMutationConfig();
-            //configureWidget();
         }
         function processDemographicData(d) {
             var arr = d.trim().split(/\r\n|\r|\n/).map(function (e, i) {
@@ -658,7 +575,6 @@ function Comut() {
             var w = options.bar.width + options.geneLegend.width + gw + options.innerLayout.margins * 3 + g.cellwidth + options.colorLegend.width;
 
             _this.gridsize = { width: gw, height: gh };
-            //_this.svg.attr('width', w).attr('height', h);
             _this.svg.attr('width', '100%').attr('height',h).attr('viewBox', '0 0 '+w+' '+h).attr('preserveAspectRatio','xMinYMin');
             _this.zoomableClip.attr('width', gw).attr('height', gh + dh +g.cellheight + o);
             _this.zoomable.select('.zoom-rect').attr('height', gh).attr('width', gw);
@@ -666,20 +582,23 @@ function Comut() {
                                                .paddingInner(_this.options.grid.padding / _this.options.grid.cellwidth);
             _this.scales.gridY = d3.scaleBand().domain(_this.data.genes.map(function (x) { return x.key; })).range([0, gh])
                                                .paddingInner(_this.options.grid.padding / _this.options.grid.cellheight);
-            //_this.scales.demographicsY = d3.scaleBand().domain(_this.demo.headers.map(function (x, k) { return x; })).range([0, dh])
-            //                                   .paddingInner(_this.options.grid.padding / _this.options.grid.cellheight);
             _this.scales.demographicsY = d3.scaleBand().domain($.map(_this.options.demographics, function (x, k) { return x.field; })).range([0, dh])
                                                .paddingInner(_this.options.grid.padding / _this.options.grid.cellheight);
             _this.demographics.attr('transform', 'translate(0,' + (gh + g.cellheight + o) + ')');
             _this.demoTitles.attr('transform', 'translate(' +(options.bar.width + options.geneLegend.width-5) +',' + (gh + g.cellheight + o) + ')');
-            var colorCodes = Object.keys(options.colorcodes);
+            
+	    //convert the mutTypeEncoding keys and colors into matched arrays to create the color scale
+	    var colorCodes = Object.keys(options.mutTypeEncoding);
             var colors = colorCodes.map(function (k) {
-                return options.colorcodes[k];
+                return options.mutTypeEncoding[k].color;
             });
             _this.scales.gridC = d3.scaleOrdinal().domain(colorCodes).range(colors);
-            var legendColors = $.map(options.legend, function(v){ return options.colorcodes[v.colorcode]; });
-            var legendText = $.map(options.legend, function(v){ return v.title; });
-            _this.scales.legendColor = d3.scaleOrdinal().domain(legendText).range(legendColors);
+		
+	    //convert the mutTypeEncoding colors and text to arrays in the order defined by options.legendOrder
+            var legendColors = $.map(options.legendOrder, function(v){ return options.mutTypeEncoding[v].color; });
+            var legendText = $.map(options.legendOrder, function(v){ return options.mutTypeEncoding[v].text; });
+            
+	    _this.scales.legendColor = d3.scaleOrdinal().domain(legendText).range(legendColors);
             _this.scales.barX = d3.scaleLinear().domain([0, Math.max.apply(null, _this.data.alteration_count.map(function (x) { return x.value; })) * 1.25]).range([0, options.bar.width]);
             _this.legend = d3.legendColor().orient('vertical').shapeWidth(options.grid.cellwidth).shapeHeight(options.grid.cellheight).scale(_this.scales.legendColor);
             _this.colorLegend.call(_this.legend).attr('transform','translate('+ (w-options.colorLegend.width) +','+ o +')');
@@ -1011,8 +930,8 @@ function Comut() {
         var num = Object.keys(_this.demo.fields).length;
         $.each(_this.demo.fields, function (k, v) {
             ii++;
-            //console.log(k, v);
-            if (v.field == 'sample') return;
+            
+	    if (v.field == 'sample') return;
             var unique_values = v.values.filter(function (v, i, s) { return s.indexOf(v) === i; });
             var vals = $('<div>');
             var numvals = unique_values.length;
@@ -1328,7 +1247,7 @@ function Comut() {
             var rowDataArr = rows[i];
             var jsonObj = { celldata: {} };
             
-            if (rowDataArr.length == 4) { // if row is empty exclude it
+            if (rowDataArr.length > 0) { // if row is empty exclude it
                 for (j = 0; j < colNames.length; j++) {
                     if (rowDataArr[j] == undefined) { // if a field in a row is empty then put in a blank entry
                         jsonObj[colNames[j].toString().trim()] = '';

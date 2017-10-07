@@ -298,30 +298,55 @@ function Comut() {
             _this.grid
                 .selectAll('.cell')
                 .data(data.cells)
-                //.exit().remove()
                 .enter()
-                .append('svg:rect')
+                .append('g')
                 .attr('class', 'cell  draggable-xy')
-                .attr('x', function (d) {
-                    return _this.scales.gridX(d.sample);
+                .attr('transform', function (d) {
+                	var e = d3.select(this);
+                	var x = _this.scales.gridX(d.sample);
+                	var y = _this.scales.gridY(d.gene);
+                	e.attr('gx',x);
+                	e.attr('gy',y);
+                    return 'translate(' + x + ','+ y + ')';
                 })
-                .attr('y', function (d) {
-                    return _this.scales.gridY(d.gene);
-                })
-                .attr('width', function (d) {
-                    return _this.scales.gridX.bandwidth();
-                })
-                .attr('height', function (d) {
-                    return _this.scales.gridY.bandwidth();
-                })
-                .style('fill', function (d) {
-                    //console.log(cScale(d.values[0].value));
-                    return _this.scales.gridC(d.type);
-                })
+                .each(function(d){
+                	//add visual elements representing alterations
+					    
+					    if(d.alterations.length==0){
+					    	 var type = 'wt';
+					    	 d3.select(this).append('svg:rect')
+						    	.attr('width',_this.scales.gridX.bandwidth())
+						    	.attr('height',_this.scales.gridY.bandwidth())
+						    	.style('fill',_this.scales.gridC(type))
+						}
+						
+						else{
+							var g = d3.select(this);
+							var alt = d.alterations.sort(function(a,b){
+								return mutTypeEncoding[a.type] - mutTypeEncoding[b.type];
+							});
+							for(var i = 0; i<alt.length;++i){
+								g.append('svg:rect')
+									.attr('width',_this.scales.gridX.bandwidth())
+									.attr('height',_this.scales.gridY.bandwidth()/alt.length)
+									.attr('y',_this.scales.gridY.bandwidth()/alt.length *i )
+									.style('fill',_this.scales.gridC(alt[i].type));
+								if(i>0 && alt[i].type==alt[i-1].type){
+									//add a white line between the two elements
+									g.append('svg:rect')
+										.attr('width',_this.scales.gridX.bandwidth())
+										.attr('x',_this.scales.gridX.bandwidth()*0)
+										.attr('height',1)
+										.attr('y',_this.scales.gridY.bandwidth()/alt.length * i-0.5)
+										.attr('fill','white');
+								}
+							}
+						}
+				    })
                 .on('mouseover', _this.tooltip.show)
-                .on('mouseout', _this.tooltip.hide)
+                .on('mouseout', _this.tooltip.hide)		
                 .call( _this.drag );
-
+	    
             _this.demographics
                 .selectAll('.cell')
                 .data(_this.demo.cells)                
@@ -384,7 +409,7 @@ function Comut() {
                     return _this.scales.gridY(d.key) + _this.scales.gridY.bandwidth() / 2;
                 })
                 .text(function (d) { return d.key; })
-                .attr('dominant-baseline', 'center');
+                .attr('dominant-baseline', 'middle');
 
             _this.demoTitles.selectAll('.fieldname')
                 .data(_this.demo.headers)
@@ -645,13 +670,24 @@ function Comut() {
         _this.grid.selectAll('.cell')
             .transition()
             .duration(duration)
-            .attr('y', function (d) {
-                var e = d3.select(this);
-                return e.classed('dragging-y')? e.attr('y') : _this.scales.gridY(d.gene);
-            })
-            .attr('x', function (d) {
-                var e = d3.select(this);
-                return e.classed('dragging-x')? e.attr('x') : _this.scales.gridX(d.sample);
+            .attr('transform',function(d){
+            		var e = d3.select(this);
+            		if(e.classed('dragging-y')){
+            			var y = parseFloat(e.attr('gy'));
+            		}
+            		else{
+            			var y = _this.scales.gridY(d.gene);
+            			e.attr('gy',y);
+            		}
+            		if(e.classed('dragging-x')){
+            			var x = parseFloat(e.attr('gx'));
+            		}
+            		else{
+            			var x = _this.scales.gridX(d.sample);
+            			e.attr('gx',x);
+            		}
+            		
+            		return 'translate(' + x + ',' + y + ')';
             })
             .attr('width',function(d){
                 return _this.scales.gridX.bandwidth();
@@ -795,34 +831,49 @@ function Comut() {
         
         var e = d3.select(this),
             dx=d3.event.dx,
-            dy=d3.event.dy,
-            x = parseFloat(e.attr('x')) + dx,
-            y = parseFloat(e.attr('y')) + dy;
+            dy=d3.event.dy;
+        var tr = e.attr('transform');
+        
+        var x = parseFloat(e.attr('gx')) + dx,
+              y = parseFloat(e.attr('gy')) + dy;
+           
                     
-        d3.selectAll('rect.dragging-y, text.dragging-y').attr('y', function (d) {
-            return parseFloat(d3.select(this).attr('y')) + dy;
+        d3.selectAll('g.cell.dragging-y').attr('transform', function (d) {
+            var e = d3.select(this);
+            var x = parseFloat(e.attr('gx'));
+            var y = parseFloat(e.attr('gy'));
+            e.attr('gy',y+dy);
+            return 'translate(' + (x) + ',' +(y+dy) + ')';
         });
-        d3.selectAll('g.dragging-y').attr('transform', function (d) {
-            var t = getTranslation(d3.select(this).attr('transform'));
-            return 'translate('+t[0]+','+(t[1] + dy)+')';
-        });
-
-        d3.selectAll('.dragging-x').attr('x', function (d) {
+		 _this.sampleLegend.selectAll('.sample.dragging-x')
+		 	.attr('gx',x)
+		 	.attr('transform','translate('+x+',0)');
+        d3.selectAll('rect.dragging-x').attr('x', function (d) {
             return parseFloat(d3.select(this).attr('x')) + dx;
         });
-        d3.selectAll('g.dragging-x').attr('transform', function (d) {
-            var t = getTranslation(d3.select(this).attr('transform'));
-            return 'translate(' + (t[0] + dx) + ',' + t[1] + ')';
+        _this.bar.selectAll('.gene.dragging-y')
+        	.attr('transform',function(d){
+        		var e = d3.select(this);
+        		var t = getTranslation(e.attr('transform'));
+        		return 'translate(' + (t[0]) + ',' + (t[1]+dy) + ')';
+        	});
+        _this.geneLegend.selectAll('.gene.dragging-y')
+        	.attr('y',y+ _this.scales.gridY.bandwidth() / 2);	
+        d3.selectAll('g.cell.dragging-x').attr('transform', function (d) {
+        	   var e = d3.select(this);
+            var x = parseFloat(e.attr('gx'));
+            var y = parseFloat(e.attr('gy'));
+            e.attr('gx',x+dx);
+            return 'translate(' + (x + dx) + ',' +y + ')';
         });
                     
-        //e.attr('x', x).attr('y', y);
-        //var stepX = _this.scales.gridX.step();
+        
         var X = _this.scales.gridX.domain().sort(function (a, b) {
             var ac = d.sample == a ? x : _this.scales.gridX(a);
             var bc = d.sample == b ? x : _this.scales.gridX(b);
             return ac - bc;
         });
-        //var stepY = _this.scales.gridY.step();
+        
         var Y = _this.scales.gridY.domain().sort(function (a, b) {
             var ac = d.gene == a ? y : _this.scales.gridY(a);
             var bc = d.gene == b ? y : _this.scales.gridY(b);
@@ -857,6 +908,8 @@ function Comut() {
         if (redraw) {
             draw(0);
         }
+        
+        
     }
     function gridDragEnd() {
         
@@ -868,6 +921,11 @@ function Comut() {
         // Create a dummy g for calculation purposes only. This will never
         // be appended to the DOM and will be discarded once this function 
         // returns.
+        if (transform.substr(0,9)=='translate')
+        {
+        	var nums = transform.match(/translate\(([-\d\.]+),\s*([-\d\.]+)\)/);
+        	return [parseFloat(nums[1]), parseFloat(nums[2])];
+        }
         var g = document.createElementNS("http://www.w3.org/2000/svg", "g");
 
         // Set the transform attribute to the provided string value.
@@ -1049,9 +1107,10 @@ function Comut() {
             //iterate over each filtered genomic data item and update the mutType array    
             tempArr.forEach(function (gData, subindex) {
                 if (gData.gene != "") {
-                    var geneArrayPos = getIndexPos(gData.gene, geneList);
-                    var mutTypeInfo = mutTypeEncoding[gData.type];
-                    mutTypeArr[geneArrayPos] = mutTypeInfo.code;
+                	var geneArrayPos = getIndexPos(gData.gene, geneList);
+                    //var mutTypeInfo = mutTypeEncoding[gData.type];
+                    //mutTypeArr[geneArrayPos] = mutTypeInfo.code;
+			mutTypeArr[geneArrayPos] =1;
                 }
             });
 
@@ -1103,7 +1162,7 @@ function Comut() {
                 var tempObj = {
                     "sample": item,
                     "gene": d,
-                    "alteration": "none",
+                    "alterations": [],
                     "type": "wt"
                 };
 
@@ -1230,29 +1289,25 @@ function Comut() {
 
     //function to convert delimited data into an array of JSON object
     function textToJson(tData, delimiter) {
-        //get rows from the data and generate an array of rows
-        //var rows = tData.split('\n');
-        var rows = tData.trim().split(/\r\n|[\r\n]/).map(function (e, i) {
-             return e.trim().split(delimiter);
-         });
+		//get rows from the data and generate an array of rows
+    	var rows = tData.trim().split(/\r\n|[\r\n]/).map(function (e, i) {
+        	return e.trim().split(delimiter);
+        });
 
         //get column names to generate field names for object
-        //var colNames = rows[0].split(delimiter).join(',').toLowerCase().split(',');
-        var colNames = rows[0].map(function(e){return e.toLowerCase(); });
+		var colNames = rows[0].map(function(e){return e.toLowerCase(); });
 
-        //iterate through the remainder of the rows of data and create the array of json object
-        var retInfo = [];
-        for (var i = 1; i < rows.length; i++) {
-            //var rowDataArr = rows[i].split(delimiter);
-            var rowDataArr = rows[i];
-            var jsonObj = { celldata: {} };
-            
-            if (rowDataArr.length > 0) { // if row is empty exclude it
-                for (j = 0; j < colNames.length; j++) {
-                    if (rowDataArr[j] == undefined) { // if a field in a row is empty then put in a blank entry
-                        jsonObj[colNames[j].toString().trim()] = '';
-                    }
-                    else {
+		//iterate through the remainder of the rows of data and create a structure of json objects with key indices of sample and gene
+		var retInfo = {};
+		for (var i = 1; i < rows.length; i++) {
+			var rowDataArr = rows[i];            
+			var jsonObj = { };
+			if (rowDataArr.length > 0) { // if row is empty exclude it				
+				for (j = 0; j < colNames.length; j++) {
+					if (rowDataArr[j] == undefined) { // if a field in a row is empty then put in a blank entry
+						jsonObj[colNames[j].toString().trim()] = '';
+					}
+					else {
                         if (j == colNames.length - 1) { //for the last column "type" convert the contents to lower case
                             //check for valid mutation type names
                             var inputMutType = rowDataArr[j].toString().toLowerCase().trim();
@@ -1266,18 +1321,53 @@ function Comut() {
                         else {
                             jsonObj[colNames[j].toString().trim()] = rowDataArr[j].toString();
                         }
-                        var label = colNames[j][0].toUpperCase() + colNames[j].substring(1);
+                        //var label = colNames[j][0].toUpperCase() + colNames[j].substring(1);
                         
-                        jsonObj.celldata[label]=rowDataArr[j].toString();
+                        //jsonObj.celldata[label]=rowDataArr[j].toString();
                     }
                 }
-                retInfo.push(jsonObj);
-            }
+			}
+			// find the sample; create an empty object if this is the first instance of this sample.
+			var sample = retInfo[jsonObj.sample];
+			if(!sample) retInfo[jsonObj.sample] = {};
+			//find the sample/gene combo for this cell; if this is the first instance, initialize the value to an empty array
+			if(jsonObj.gene != ''){
+		    	var cell = retInfo[jsonObj.sample][jsonObj.gene];
+                if(!cell) cell = [];
+		    	//push a json object with alteration and type onto the array
+		    	cell.push({alteration: jsonObj.alteration, type: jsonObj.type});
+		    	retInfo[jsonObj.sample][jsonObj.gene] = cell;
+			}
         }
-        return retInfo;
+
+		var retArray = [];
+		var samples = Object.keys(retInfo);
+		for(var i=0; i<samples.length;++i){
+			var genes = Object.keys(retInfo[samples[i]]);
+			if(genes.length==0){
+				var cell = {sample:samples[i], gene: ''};
+				retArray.push(cell);
+			}
+			else{
+				for(var j=0;j<genes.length;++j){
+					var celldata = {Sample: samples[i], Gene: genes[j]};
+					var alterations = retInfo[samples[i]][genes[j]];
+					if(alterations.length == 1){
+						celldata['Alteration'] = alterations[0].alteration + ' - ' + alterations[0].type;
+					}
+					else if(alterations.length > 1){
+						for(var a = 0; a<alterations.length; ++a){
+							celldata['Alteration '+(a+1)] = alterations[a].alteration + ' - ' + alterations[a].type;
+						}
+					}
+					var cell = {sample:samples[i], gene: genes[j], alterations: alterations, celldata: celldata };
+					retArray.push(cell);
+				}
+			}
+		}
+        return retArray;
     }
 
 
 }
-
 
