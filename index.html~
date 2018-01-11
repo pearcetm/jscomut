@@ -11,10 +11,10 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.1.1/d3.min.js"></script>
     
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="jscomut.css">
+    <link rel="stylesheet" href="comut.css">
     
-    <script src="jscomututils.js"></script>
-    <script src="jscomut.js"></script>
+    <script src="utils.js"></script>
+    <script src="comut.js"></script>
 
 </head>
 <body>
@@ -84,5 +84,5 @@ PBA8	T2N1M0	55	M	NOS	Stable	POS
 PBA9	T2N0M0	61	F	Micropapillary	Unstable	POS
         </div>
     </div>
-  <script src="jscomutdemo.js"></script>
+  <script src="index.js"></script>
 </body>

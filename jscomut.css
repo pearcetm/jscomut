@@ -1,0 +1,147 @@
+/********* Options panel styling **********/
+.comut-panel{
+	display:block;
+	padding:2px;
+	margin:2px;
+	border:thin lightgray solid;
+}
+.optionsheader .panel-header{
+	display:inline-block;
+	margin-right:5px;	
+}
+.comut-panel.collapsed{
+	display:none;
+}
+.panel-header{
+	cursor:pointer;
+	color:purple;
+}
+.panel-header:before{
+	content:'[-]';
+	padding-right:2px;
+}
+.panel-header[collapsed=true]:before{
+	content:'[+]';
+	padding-right:2px;
+}
+
+/******End of options panel styling *******/
+.load-data, .save-data{
+	border-left: medium darkgray solid;
+	margin:12px 4px;
+	padding: 5px;
+}
+.load-data:before{
+	content:'Load';
+}
+.save-data:before{
+	content:'Save';
+}
+.load-data:before, .save-data:before{
+	font-size:1.2em;
+	font-weight:bold;
+	display:block;
+}
+#mutation-file-info:empty:before{
+	content:'Genomic data: not loaded';
+}
+#demographic-file-info:empty:before{
+	content:'Demographic data: not loaded';
+}
+#gene-fields:empty:before{
+	content:'Genomic data has not been loaded';
+}
+#demographics-fields:empty:before{
+	content:'Demographic data has not been loaded';
+}
+/**************/
+input[type=number]{
+	width:4em;
+	margin-right:2px;
+}
+label.alteration-type{
+	width:100px;
+}
+input{
+	margin-right:10px;
+}
+/********* Comut widget styling **********/
+svg[interaction=dnd] .draggable-xy{
+    cursor:all-scroll;
+}
+svg[interaction=zp] .draggable-xy{
+    cursor:-webkit-zoom-grab;
+}
+#comut-svg{
+    overflow:visible;
+}
+.comut-download-overlay{
+	position: fixed;
+	left: 0;
+	right: 0;
+	top: 0;
+	bottom: 0;
+}
+.comut-download-background{
+	width:100%;
+	height:100%;
+	background-color: black;
+	opacity: 0.6
+}
+.comut-download-box{
+   background-color:white;
+   position: fixed;
+   left: 50%;
+   top: 50%;
+   transform: translate(-50%, -50%);
+   padding: 1em;
+   text-align:center;
+}
+.comut-download-box:before{
+	content:'Use the link below to save (download) your file.  Hint: Right-click and "save as" to change the file name or location.';
+	max-width:25em;
+	display:block;
+	margin-bottom:5px;
+}
+/********** End of comut widget styling ****/
+
+
+
+/*****d3-tip related styling******/
+.d3-tip {
+  line-height: 1;
+  font-weight: bold;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  border-radius: 2px;
+}
+
+/* Creates a small triangle extender for the tooltip */
+.d3-tip:after {
+  box-sizing: border-box;
+  display: inline;
+  font-size: 10px;
+  width: 100%;
+  line-height: 1;
+  color: rgba(0, 0, 0, 0.8);
+  content: "\25BC";
+  position: absolute;
+  text-align: center;
+}
+/* Style northward tooltips differently */
+.d3-tip.n:after {
+  margin: -1px 0 0 0;
+  top: 100%;
+  left: 0;
+}
+.tooltip-key{
+    color:lightgrey;
+}
+.tooltip-key::after{
+    content:': ';
+}
+.d3-tip span{
+    margin:0.1em auto;
+}
+/********** End of d3-tip related styling *********/
