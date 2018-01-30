@@ -180,7 +180,7 @@ function Comut() {
         _this.colorLegend = _this.svg
             .append('g')
             .attr('class', 'color-legend');
-        _this.scales={};
+        if(!_this.scales) _this.scales={};
 	}
 	
 //------------------------------setupConfigPanel --------------------------------//	
@@ -253,9 +253,7 @@ function Comut() {
         var layoutConfig = $('<div>',{class:'comut-panel collapsed'});
         $('<div>').appendTo(configpanel).append(layoutConfig);
         $('<h4>',{class:'panel-header',collapsed:true}).text('Edit widget layout').data('target',layoutConfig).insertBefore(layoutConfig);
-        //var optionseditorcontainer = $('<div>').appendTo(layoutConfig); 
-        //_this.optionseditor = $('<textarea>',{class:'options-editor'}).appendTo(optionseditorcontainer).css({width:'400px',height:'300px'}).val(JSON.stringify(_this.options,null,2))
-        //										    .on('blur',function(){ _this.options=JSON.parse(_this.optionseditor.val()); });
+        
         $('<label>').text('Cell width: ').appendTo(layoutConfig);
         _this.optionsEditor.gridCellWidth = $('<input>',{type:'number'}).appendTo(layoutConfig).val(_this.options.grid.cellwidth);
         $('<label>').text('height: ').appendTo(layoutConfig);
@@ -334,7 +332,7 @@ function Comut() {
                 .data(data.cells)
                 .enter()
                 .filter(function (d) {
-                    return _this.genesToPlot.includes(d.gene) && genomic_samples.includes(d.sample);
+                    return _this.options.genesToPlot.includes(d.gene) && genomic_samples.includes(d.sample);
                 })
                 .append('g')
                 .attr('class', 'cell  draggable-xy')
@@ -391,7 +389,7 @@ function Comut() {
                 .data(_this.data.demographics.cells)      
                 .enter()
                 .filter(function (d) {
-                    return _this.demofields.indexOf(d.fieldname) != -1 && genomic_samples.indexOf(d.sample)!=-1;
+                    return _this.options.demofields.indexOf(d.fieldname) != -1 && genomic_samples.indexOf(d.sample)!=-1;
                 })
                 .append('svg:rect')
                 .attr('class', 'cell  draggable-xy')
@@ -409,7 +407,6 @@ function Comut() {
                     return _this.scales.demographicsY.bandwidth();
                 })
                 .style('fill', function (d) {
-                    //console.log(cScale(d.values[0].value));
                     return _this.scales.demoC[d.fieldname](d.value);
                 })
                 .on('mouseover', _this.tooltip.show)
@@ -421,7 +418,7 @@ function Comut() {
                 .data(data.alteration_count)
                 .enter()
                 .filter(function (d) {
-                    return _this.genesToPlot.includes(d.key);
+                    return _this.options.genesToPlot.includes(d.key);
                 })
                 .append('g')
                 .attr('class', 'gene')
@@ -446,7 +443,7 @@ function Comut() {
                 .data(data.genes)
                 .enter()
                 .filter(function (d) {
-                    return _this.genesToPlot.includes(d.key);
+                    return _this.options.genesToPlot.includes(d.key);
                 })
                 .append('svg:text')
                 .attr('class', 'gene')
@@ -464,7 +461,7 @@ function Comut() {
                 .data(_this.data.demographics.fields)
                 .enter()
                 .filter(function (d) {
-                    return _this.demofields.indexOf(d.field) != -1;
+                    return _this.options.demofields.indexOf(d.field) != -1;
                 })
                 .append('svg:text')
                 .attr('class', 'fieldname')
@@ -486,7 +483,7 @@ function Comut() {
                 .data(_this.data.demographics.fields)
                 .enter()
                 .filter(function (d) {
-                    return _this.demofields.indexOf(d.field) != -1;
+                    return _this.options.demofields.indexOf(d.field) != -1;
                 })
                 .append('g')
                 .attr('class', 'demolegend')
@@ -546,6 +543,7 @@ function Comut() {
         	try{
         		var json = JSON.parse(d);
         		if(json.config) _this.options = json.config; //load config first before dealing with data
+        		if(json.scales) _this.scales = json.scales;
         		if(json.data) {
         			_this.data = json.data;
         			associateDemographicsWithSamples();	
@@ -699,13 +697,45 @@ function Comut() {
         
         }
         function configureWidget() {
-        	  var demographicsToUse = _this.demofields;
-        	  var genesToPlot = _this.genesToPlot;
-            var options = _this.options,
-                g = options.grid,
+        	  var demographicsToUse = _this.options.demofields;
+        	  var genesToPlot = _this.options.genesToPlot;
+        	  var options = _this.options;
+        	  
+				//First figure out which types of alterations are included in order to set the geometry appropriately        	  
+        	  //convert the mutTypeEncoding keys and colors into matched arrays to create the color scale
+			   var mutTypes = Object.keys(options.mutTypeEncoding);
+				var colors = mutTypes.map(function (k) {
+				    return options.mutTypeEncoding[k].color;
+				});
+				_this.scales.gridC = d3.scaleOrdinal().domain(mutTypes).range(colors);
+        	  var mutTypeArray = mutTypes.map(function(val){
+					var obj = options.mutTypeEncoding[val];
+					obj.type = val;
+					return obj;
+				}).sort(function(a,b){
+					var sortorder = a.legendOrder - b.legendOrder;
+					if(sortorder) return (sortorder);
+					return a.type.localeCompare(b.type); 
+				});
+				//convert the mutTypeEncoding colors and text to arrays in the order defined by options.legendOrder
+				 
+				 var legendEntries = mutTypeArray.reduce(function(output,curr){
+				 	var include = _this.data.genomic.alterationTypes.includes(curr.type);
+				 	if(include) {
+				 		output.colors.push(curr.color);
+				 		output.text.push(curr.text);
+				 	}
+				 	return output;
+				 },{colors:[],text:[]});
+				var legendColors = legendEntries.colors;
+				var legendText = legendEntries.text;
+
+         
+            
+            var g = options.grid,
                 dh = (g.cellheight + g.padding) * demographicsToUse.length,
                 gw = (g.cellwidth + g.padding) * _this.data.genomic.samples.length,
-                gh = (g.cellheight + g.padding) * Math.max(genesToPlot.length, Object.keys(_this.options.mutTypeEncoding).length),
+                gh = (g.cellheight + g.padding) * Math.max(genesToPlot.length, legendColors.length),
                 o = options.sampleLegend.height + options.innerLayout.margins,
                 h = gh + dh + g.cellheight + o;
             _this.scaleExtent = [1, 2];
@@ -740,37 +770,15 @@ function Comut() {
 	        
 	        _this.sampleLegend.attr('transform', 'translate(0,' + (o-options.innerLayout.margins) + ')' +
 	            ' scale(1,' + (options.sampleLegend.show ? 1:0) + ')');
+	            
+	     //if order information is present in the data, set the domain of the scales here.
+	     if(_this.data.geneorder) _this.scales.gridY.domain(_this.data.geneorder);
+	     if(_this.data.demoorder) _this.scales.demographicsY.domain(_this.data.demoorder);
+	     if(_this.data.sampleorder) _this.scales.gridX.domain(_this.data.sampleorder);
             
-	    //convert the mutTypeEncoding keys and colors into matched arrays to create the color scale
-	   var mutTypes = Object.keys(options.mutTypeEncoding);
-		var colors = mutTypes.map(function (k) {
-		    return options.mutTypeEncoding[k].color;
-		});
-		_this.scales.gridC = d3.scaleOrdinal().domain(mutTypes).range(colors);
-		
-		var mutTypeArray = mutTypes.map(function(val){
-			var obj = options.mutTypeEncoding[val];
-			obj.type = val;
-			return obj;
-			}).sort(function(a,b){
-				var sortorder = a.legendOrder - b.legendOrder;
-				if(sortorder) return (sortorder);
-				return a.type.localeCompare(b.type); 
-			});
-	      //convert the mutTypeEncoding colors and text to arrays in the order defined by options.legendOrder
 	    
-          //  var legendColors = $.map(mutTypeArray, function(v){ return v.color; });
-          //  var legendText = $.map(mutTypeArray, function(v){ return v.text; });
-          var legendEntries = mutTypeArray.reduce(function(output,curr){
-          	var include = _this.data.genomic.alterationTypes.includes(curr.type);
-          	if(include) {
-          		output.colors.push(curr.color);
-          		output.text.push(curr.text);
-          	}
-          	return output;
-          },{colors:[],text:[]});
-         var legendColors = legendEntries.colors;
-         var legendText = legendEntries.text;
+		
+		
             
 	      _this.scales.legendColor = d3.scaleOrdinal().domain(legendText).range(legendColors);
 	      _this.scales.barX = d3.scaleLinear().domain([0, Math.max.apply(null, _this.data.genomic.alteration_count.map(function (x) { return x.value; })) * 1.25]).range([0, options.bar.width]);
@@ -796,6 +804,9 @@ function Comut() {
     this.randomize = function () {
         _this.scales.gridY.domain(shuffle(_this.scales.gridY.domain()));
         _this.scales.gridX.domain(shuffle(_this.scales.gridX.domain()));
+        _this.data.sampleorder = _this.scales.gridX.domain();
+        _this.data.geneorder = _this.scales.gridY.domain();
+        _this.data.demoorder = _this.scales.demographicsY.domain();
         draw(1000);
         
     }
@@ -812,7 +823,9 @@ function Comut() {
         if (opts.x) {
             sortByGeneOrder();
         }
-
+		  
+        _this.data.geneorder = _this.scales.gridY.domain();
+        _this.data.demoorder = _this.scales.demographicsY.domain();
         draw(1000);
     }
     function draw(duration) {
@@ -935,6 +948,8 @@ function Comut() {
        	return;
        }
        _this.scales.gridX.domain(sortedSampleOrder);
+       
+        _this.data.sampleorder = _this.scales.gridX.domain();
        draw(1000);
 	}
     function sortByGeneOrder() {
@@ -962,6 +977,7 @@ function Comut() {
             
         });
         _this.scales.gridX.domain(sortedSampleOrder);
+        _this.data.sampleorder = _this.scales.gridX.domain();
     }
     function shuffle(array) {
         var currentIndex = array.length, temporaryValue, randomIndex;
@@ -1108,6 +1124,9 @@ function Comut() {
         
         d3.selectAll('.dragging-y,.dragging-x').classed('dragging-y dragging-x', false);
         draw(0);
+        _this.data.sampleorder = _this.scales.gridX.domain();
+        _this.data.geneorder = _this.scales.gridY.domain();
+        _this.data.demoorder = _this.scales.demographicsY.domain();
     }
     function getTranslation(transform) {
         //see http://stackoverflow.com/questions/38224875/replacing-d3-transform-in-d3-v4 for source
@@ -1182,14 +1201,16 @@ function Comut() {
         }
         d.text(_this.data.demographics.datasource+': '+_this.data.demographics.samples.length+' samples, '+_this.data.demographics.fields.length+' fields');
         $('.add-data-button').show();
-        _this.demofields = _this.data.demographics.fields.map(function (x) { return x.field; });
+        _this.options.demofields = _this.data.demographics.fields.map(function (x) { return x.field; });
     }
     function setupMutationConfig(){
     	var list = $('#gene-fields').empty(); 
     	var genes = _this.data.genomic.genes.map(function(x){return x.key} ).sort();
     	$.each(genes, function(index,gene){
     		var d = $('<div>').appendTo(list);
-    		$('<input>',{class:'gene-checkbox',type:'checkbox',checked:true}).data('gene',gene).appendTo(d);
+    		var showGene = true;
+    		if(_this.options.genesToPlot) showGene = _this.options.genesToPlot.includes(gene); //show/hide based on saved config
+    		$('<input>',{class:'gene-checkbox',type:'checkbox',checked:showGene}).data('gene',gene).appendTo(d);
     		$('<span>').text(gene).appendTo(d);
     	});
     }
@@ -1276,14 +1297,14 @@ function Comut() {
         });
         
         //demographics filter
-        _this.demofields = _this.data.demographics.fields.reduce(function(arr, current){
+        _this.options.demofields = _this.data.demographics.fields.reduce(function(arr, current){
         	var current_field = current.field;
         	if(current.options.display) arr.push(current_field);
         	return arr;
         },[]);
         
         //gene filter
-        _this.genesToPlot = _this.data.genomic.genes.reduce(function(arr,current_gene){
+        _this.options.genesToPlot = _this.data.genomic.genes.reduce(function(arr,current_gene){
         	var current_opt = $('#gene-fields .gene-checkbox').filter(function(index,checkbox){ return $(checkbox).data('gene')==current_gene.key; });
         	if(current_opt.is(':checked')) arr.push(current_gene.key);
         	return arr;
@@ -1385,7 +1406,9 @@ function Comut() {
 	  	     return datastruct;
 	  	  }
 	  	  else{
-	  	  	  datastruct = {data: _this.data};
+	  	  	  datastruct = {
+	  	  	  	data: _this.data,
+	  	  	  };
 	  	  	  saveJSON(datastruct,'comut-data.json');
 	  	  }
 	  };
