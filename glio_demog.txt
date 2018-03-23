@@ -9,12 +9,11 @@ Sample	Diagnosis	WHO grade
 4745	AA	III
 4526	AA	III
 4587	AA	III
-6623	AA	III
-8271	AA	III
-4588	AA	III
-4733	AA	III
-4742	AA	III
-970B1	AA	III
+4588	AO	III
+4733	AO	III
+4742	AO	III
+970B1	AO	III
+6623	GBM	III
 4747	GBM	IV
 4593	GBM	IV
 4594	GBM	IV
@@ -25,19 +24,13 @@ Sample	Diagnosis	WHO grade
 4600	GBM	IV
 4601	GBM	IV
 4603	GBM	IV
-4734	GBM	IV
 4746	GBM	IV
 4597	GBM	IV
 888A2	GBM	IV
-6615	GBM	IV
 7521	GBM	IV
 7667	GBM	IV
 1008EG	GBM	IV
-6622	GG	I
-6765	GG	I
-6957	GG	I
 4589	GBM	IV
-6285	PA	I
 4740	MB	IV
 4738	MB	IV
 1002MB	MB	IV
@@ -56,3 +49,59 @@ Sample	Diagnosis	WHO grade
 2011PA	PA	I
 2012PA	PA	I
 2118PA	PA	I
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
