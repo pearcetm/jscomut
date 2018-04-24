@@ -4,85 +4,77 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Comutation plot</title>
-  
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.1.1/d3.min.js"></script>
-    
+
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="jscomut.css">
-    
+
     <script src="jscomututils.js"></script>
     <script src="jscomut.js"></script>
+    <script src="https://use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
 
 </head>
 <body>
-  <div style="width:100%;max-width:950px;margin:0 auto;">
+  <div class="main-container">
+    <header id="header">
+      <div class="container">
+        <div class="row">
+          <div class="col-xs-1">
+      			<img src="jscomut-icon.png" alt="jscomut-icon" id="logo">
+          </div>
+          <div class="col-xs-11">
+      			<h1>jsComut
+              <small class="text-muted">Javascript library for interactive co-mutation plots</small>
+            </h1>
+          </div>
+        </div>
+      </div>
+      <p style="padding:10px 0px">This is a demo page for the jsComut which provides preload genomic data for users to checkout the features of this widget. Alternatively, users can upload their own data for visual analysis. </p>
+    </header>
     <div id="widget"></div>
     <div id="test-buttons"></div>
-  </div>
-    <div id="example-data" style="display:none;">
-        <div id="example-mutations">
-            Sample	Gene	Alteration	Type
-PBA1	TP53	A189fs	fs
-PBA2	TP53	R273H	missense
-PBA2	IDH2	R172S	missense
-PBA3	CTNNB1	D32N	missense
-PBA3	RB1	HETLOSS	del
-PBA4	SMARCB1	HETLOSS	del
-PBA5	CTNNB1	S45F	missense
-PBA5	TP53	K132N	missense
-PBA5	KRAS	G12A	missense
-PBA5	APC	R876*	stop
-PBA5	TP53	HETLOSS	del
-PBA6			
-PBA7	TP53	F134C	missense
-PBA8	TP53	F134C	missense
-PBA9	KRAS	G12D	missense
-PBA9	GNAS	GAIN	amp
-PBA11			
-PBA12	TP53	G245C	missense
-PBA12	PIK3CA	N1044K	missense
-PBA12	SMO	Q216*	stop
 
-        </div>
-        <div id="example-annotations">
-            Sample	Stage	Age	Sex	HGUC subtype	MSI	GATA3
-PBA1	T2N0M0	65	M	Micropapillary	Stable	POS
-PBA11	T4aN2M1	76	M	Squamous	Stable	POS
-PBA12	T2N0M0	58	M	Sarcomatoid	Stable	POS
-PBA2	T1N0M0	68	F	Neuroendocrine	Stable	POS
-PBA21	T3bN1M1	38	M	NOS	Stable	POS
-PBA211	T3aN2M0	75	F	Nested	Stable	NEG
-PBA212	T3aN1M0	71	F	CIS	Stable	NEG
-PBA22	T1N0M0	80	M	Squamous	Stable	POS
-PBA23	T1N0M0	63	M	NOS	Stable	POS
-PBA24	T3bN2M0	72	M	Micropapillary	Stable	POS
-PBA25	T2bN0M0	44	M	Micropapillary	Stable	POS
-PBA26	T3bN2M0	36	F	Squamous	Stable	POS
-PBA27	T4aN2M0	46	M	Squamous	Unstable	POS
-PBA28	T2bN1M0	39	F	Nested	Stable	POS
-PBA29	T2bN0M0	72	M	Sarcomatoid	Stable	POS
-PBA3	T2bN1M0	60	F	Neuroendocrine	Stable	POS
-PBA31	T1N0M0	39	M	Neuroendocrine	Stable	POS
-PBA311	T2bN1M0	43	M	Squamous	Stable	POS
-PBA312	T2N0M0	53	M	Squamous	Unstable	NEG
-PBA32	T3bN2M1	74	M	NOS	Stable	POS
-PBA33	T3bN2M0	61	F	NOS	Stable	POS
-PBA34	T4aN0M0	38	M	NOS	Stable	POS
-PBA35	T1N0M0	76	M	NOS	Stable	NEG
-PBA36	T1N0M0	55	F	NOS	Stable	POS
-PBA37	T1N0M0	50	M	Squamous	Stable	POS
-PBA38	T2bN1M0	59	M	Adenocarcinoma	Stable	POS
-PBA39	T4aN2M1	79	F	NOS	Stable	POS
-PBA4	T2N0M0	73	F	Sarcomatoid	Stable	POS
-PBA5	T1N0M0	68	M	NOS	Stable	NEG
-PBA6	T3bN2M0	78	M	Squamous	Stable	NEG
-PBA7	T4aN0M0	74	M	NOS	Stable	POS
-PBA8	T2N1M0	55	M	NOS	Stable	POS
-PBA9	T2N0M0	61	F	Micropapillary	Unstable	POS
-        </div>
-    </div>
+    <section class="footer">
+      <footer>
+        <span class="footer-section-title">
+          Authors:
+        </span>
+        <span class="footer-section-text">
+        		<br />
+            Thomas Pearce, MD, PhD
+            <br />
+            Somak Roy, MD
+        </span>
+        <br />
+        <span class="footer-section-title">
+          Source code:
+        </span>
+        <span class="footer-section-text">
+          Visit our github project page &nbsp
+          <a href="https://github.com/pearcetm/jscomut" target="_blank">
+            <i class="fab fa-2x fa-github-square"></i>
+          </a>
+        </span>
+        <br /><br />
+        <span class="footer-section-title">
+          Copyright:
+        </span>
+        <span class="footer-section-text">
+          jsComut is licensed under the <a href="https://www.apache.org/licenses/LICENSE-2.0" target="_blank">Apache License v2.0</a>.
+        </span>
+        <br /><br />
+        <span class="footer-section-title">
+          Disclaimer:
+        </span>
+        <span class="disclaimer-text">
+          This webpage for jsComut library is for demonstration purpose only. The genomic data provided in this demonstration page or personal research data uploaded to this webpage for visualization does not constitute medical advice and should not be be treated as such. Data containing protected health information (PHI) should not be loaded on this demo page. No information is uploaded to or stored on the servers, however the authors are not responsbile for any breach of identifiable medical information if end user chooses to load data containing PHI.
+        </span>
+      </footer>
+    </section>
+  </div>
   <script src="jscomutdemo.js"></script>
 </body>

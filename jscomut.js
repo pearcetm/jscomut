@@ -1,12 +1,12 @@
 function Comut() {
     var _this = this;
-    
+
     _this.data = {
     	genomic: { samples:[], genes:[], cells: [] },
     	demographics:  { headers:[], fields:[], cells: [] },
     	samples:{},
     };
-    
+
     _this.default_options = {
         target: '',
         editableOptions:true,
@@ -24,7 +24,7 @@ function Comut() {
             width: 70,
         },
         sampleLegend:{
-            
+
             height: 100,
             show:'yes',//if not 'yes' a scale of zero will hide the labels
         },
@@ -33,7 +33,7 @@ function Comut() {
         },
         innerLayout:{
             margins:5,
-        },        
+        },
 		mutTypeEncoding: {
 		    "wt": { "color": "#D4D4D4", "text": "No alteration","legendOrder":8 },
 		    "missense": { "color": "#0F8500", "text": "Missense","legendOrder":0 },
@@ -53,15 +53,15 @@ function Comut() {
     _this.mode = {
         interaction: 'none'
     };
-    
+
     this.init = function (options) {
         //now that the widget has been initialized, add the API function to pass in data
         _this.setData=setData;
-    	
+
     	//extend the default options with the passed-in options, overriding defaults when needed
         _this.options = $.extend(true, {}, _this.default_options, options);
         options = _this.options;
-        
+
         //where should the widget be located within the page?
         if (options.target && $(options.target).length >0 ) {
             _this.widget = $(options.target).eq(0);
@@ -69,29 +69,29 @@ function Comut() {
         else {
             _this.widget = $('<div>', { class: 'comut' }).hide().appendTo('body');
         }
-		 
-		//create the widget controls for selecting interactive modes        
+
+		//create the widget controls for selecting interactive modes
         setupModeControls();
-        
-        //add div to act as the container for the comut plot widget itself        
+
+        //add div to act as the container for the comut plot widget itself
 		  _this.svgcontainer = $('<div>',{class:'comut-svg-container'}).appendTo(_this.widget);
 		  //select the container as a d3 selection instead of jquery for convenience
 		  _this.d3widget = d3.select(_this.svgcontainer[0]);
-		  
+
 		  //create the configuration panel
         setupConfigPanel();
-        
+
         //create elements to allow saving svg via download mechanism
         setupSVGDownload();
-        
-        //set up the tooltip to work to display extra information        
+
+        //set up the tooltip to work to display extra information
         setupTooltip();
-        
+
         //create the components of the comut plot (sample grid, demographic grid, legends, titles, graphs, etc)
         setupWidgetComponents();
-        
+
 	} // end of this.init
-	
+
 	function setupWidgetComponents(){
 		var options = _this.options;
         var w = options.bar.width + options.geneLegend.width + options.grid.cellwidth + options.innerLayout.margins * 3 + options.colorLegend.width;
@@ -99,7 +99,7 @@ function Comut() {
         var o = options.sampleLegend.height + options.innerLayout.margins;
         var g = options.grid;
 
-        
+
 
         _this.svg = _this.d3widget
             .append('svg')
@@ -123,10 +123,10 @@ function Comut() {
                 .filter(function () { return _this.mode.interaction == 'dnd'; });
 
         $('#radio-none').click(); //do this after zoom and drag object are created
-        
+
         _this.gridholder = _this.svg.append('g')
             .attr('transform', 'translate(' + (options.bar.width + options.geneLegend.width + options.innerLayout.margins * 2) + ',0)');
-        
+
         _this.zoomable = _this.gridholder.append('g')
             .attr('clip-path', 'url(#zoomable-clip)')
             .call(_this.zoom);
@@ -162,7 +162,7 @@ function Comut() {
             .append('g')
             .attr('class', 'gene-legend')
             .attr('transform', 'translate(' + (options.bar.width + options.innerLayout.margins) + ',' + (o) + ')');
-        
+
         _this.demoTitles = _this.svg
             .append('g')
             .attr('class', 'demo-titles')
@@ -182,8 +182,8 @@ function Comut() {
             .attr('class', 'color-legend');
         if(!_this.scales) _this.scales={};
 	}
-	
-//------------------------------setupConfigPanel --------------------------------//	
+
+//------------------------------setupConfigPanel --------------------------------//
 	function setupConfigPanel(){
 		var options = _this.options;
         var ctrls = $('.comut-ctrls');
@@ -195,16 +195,16 @@ function Comut() {
         })
         var optionspanel = $('<div>',{class:'comut-options-panel'}).prependTo(ctrls);
         var optionsheader = $('<div>',{class:'optionsheader'}).appendTo(optionspanel);
-		  
-		  //Data selection and saving - "File" menu functions
+
+		  //Data selection and saving - "Load" menu functions
         var filepanel = $('<div>',{class:'comut-panel collapsed'}).insertAfter(optionsheader);
-        var filepanelHeader = $('<div>',{class:'panel-header',collapsed:true}).text('File').prependTo(optionsheader).data('target',filepanel);
-        
+        var filepanelHeader = $('<div>',{class:'panel-header',collapsed:true}).text('Load').prependTo(optionsheader).data('target',filepanel);
+
         var loadpanel =   $('<div>',{class:'load-data'}).appendTo(filepanel);
         var fileInfo = $('<div>', { id:'file-info', class: 'config-group' }).appendTo(loadpanel);
-         
+
 		  if (options.dataInput.filePicker == true) {
-            _this.filePicker = $('<input>', { type: 'file', class: 'comut-file-picker', id: 'mfile' }).insertBefore(fileInfo).on('change', function (e) {
+            _this.filePicker = $('<input>', { type: 'file', class: 'comut-file-picker', id: 'mfile', style: 'margin-bottom: 10px' }).insertBefore(fileInfo).on('change', function (e) {
                 loadFile(e);
             });
             $('<label>', { for: 'mfile' }).text('Select data file(s) to load').insertBefore(_this.filePicker);
@@ -215,45 +215,45 @@ function Comut() {
                     clipboardData = e.originalEvent.clipboardData || window.originalEvent.clipboardData;
                     pastedData = clipboardData.getData('text');
                     processTextData(pastedData,'Pasted from clipboard');
-                     
+
                     $(this).val('');
                     return false;
                 });
         }
 		//display info about the selected file(s)
        var genomicsInfo = $('<div>', { id:'mutation-file-info'}).appendTo(fileInfo);
-		 var demographicInfo = $('<div>',{id:'demographic-file-info'}).appendTo(fileInfo);            
+		 var demographicInfo = $('<div>',{id:'demographic-file-info'}).appendTo(fileInfo);
         //add button to create the widget with this data
-        $('<button>', { class: 'add-data-button' }).text('Add this data to the Comut plot').on('click', function () {
+        $('<button>', { class: 'add-data-button btn btn-success' }).text('Add this data to the Comut plot').on('click', function () {
         		$(this).hide();
             //filepanelHeader.click();
             updateOptions();
             configureWidget();
             createDataSVG();
         }).appendTo(fileInfo).hide();
-         
-         
-        //"save" panel   
-        var savepanel =   $('<div>',{class:'config-panel save-data'}).appendTo(filepanel);    
-		  $('<button>').text('Save data and configuration').appendTo(savepanel).on('click',saveDataAndConfig);
-        $('<button>').text('Save data only').appendTo(savepanel).on('click',saveData); 
-        $('<button>').text('Save configuration only').appendTo(savepanel).on('click',saveConfig);
-        
-        
-		  
+
+
+        //"save" panel
+        var savepanel =   $('<div>',{class:'config-panel save-data'}).appendTo(filepanel);
+		  $('<button>', { class: 'btn btn-default' }).text('Save data and configuration').appendTo(savepanel).on('click',saveDataAndConfig);
+        $('<button>', { class: 'btn btn-default' }).text('Save data only').appendTo(savepanel).on('click',saveData);
+        $('<button>', { class: 'btn btn-default' }).text('Save configuration only').appendTo(savepanel).on('click',saveConfig);
+
+
+
 		  var configpanel =   $('<div>',{class:'comut-panel collapsed'}).appendTo(optionspanel);
 
-			//only provide the control to open show this dialog if the initial options allow it		  
+			//only provide the control to open show this dialog if the initial options allow it
 		  if(_this.options.editableOptions) $('<div>',{class:'panel-header',collapsed:true}).text('Edit').appendTo(optionsheader).data('target',configpanel);
-         
+
         //Other configuration options - layout, colors, gene/demographic filters
         _this.optionsEditor = {}; //structure to hold input elements
-        
+
         //layout
         var layoutConfig = $('<div>',{class:'comut-panel collapsed'});
         $('<div>').appendTo(configpanel).append(layoutConfig);
         $('<h4>',{class:'panel-header',collapsed:true}).text('Edit widget layout').data('target',layoutConfig).insertBefore(layoutConfig);
-        
+
         $('<label>').text('Cell width: ').appendTo(layoutConfig);
         _this.optionsEditor.gridCellWidth = $('<input>',{type:'number'}).appendTo(layoutConfig).val(_this.options.grid.cellwidth);
         $('<label>').text('height: ').appendTo(layoutConfig);
@@ -280,7 +280,7 @@ function Comut() {
         $('<label>').text('Color legend width ').appendTo(layoutConfig);
         _this.optionsEditor.colorLegendWidth = $('<input>',{type:'number'}).appendTo(layoutConfig).val(_this.options.colorLegend.width);
         $('<br>').appendTo(layoutConfig);
-        
+
         //alteration setup
         var alterationSetup = $('<div>', { id: 'alteration-setup',class:'comut-panel collapsed' });
         $('<div>').appendTo(configpanel).append(alterationSetup);
@@ -289,31 +289,31 @@ function Comut() {
         	addAlterationConfig(k,v,alterationSetup);
         });*/
         setupAlterationConfig();
-        
+
         //gene filter - add configuration area now, will be further set up when data is added
         var geneSelection = $('<div>', { id: 'gene-fields',class:'comut-panel collapsed' });
         $('<div>').appendTo(configpanel).append(geneSelection);
         $('<h4>',{class:'panel-header',collapsed:true}).text('Select genes to display').data('target',geneSelection).insertBefore(geneSelection);
-        
-        
+
+
         //demographic filter - add configuration area now, will be further set up with data is added
         var demographicConfig = $('<div>', { id: 'demographics-fields',class:'comut-panel collapsed' });
         $('<div>').appendTo(configpanel).append(demographicConfig);
         $('<h4>',{class:'panel-header',collapsed:true}).text('Select demographic info to display').data('target',demographicConfig).insertBefore(demographicConfig);
-     
-	  	  
-		  
-        
-        
+
+
+
+
+
         //add button to update the widget with the new options
         $('<button>', { class: 'btn btn-default' }).text('Update Comut plot settings').on('click', function () {
             updateOptions();
             configureWidget();
             createDataSVG();
         }).appendTo(configpanel);
-        
+
 	} //end of function setupConfigPanel(){...}
-	
+
 	//--------------- createDataSVG -----------------------------------------------------------//
         function createDataSVG() {
             _this.grid.selectAll('.cell').data([]).exit().remove();
@@ -326,7 +326,7 @@ function Comut() {
 
             var data = _this.data.genomic;
             var genomic_samples=data.samples;
-            
+
             _this.grid
                 .selectAll('.cell')
                 .data(data.cells)
@@ -346,7 +346,7 @@ function Comut() {
                 })
                 .each(function(d){
                 	//add visual elements representing alterations
-					    
+
 					    if(d.alterations.length==0){
 					    	 var type = 'wt';
 					    	 d3.select(this).append('svg:rect')
@@ -354,7 +354,7 @@ function Comut() {
 						    	.attr('height',_this.scales.gridY.bandwidth())
 						    	.style('fill',_this.scales.gridC(type))
 						}
-						
+
 						else{
 							var g = d3.select(this);
 							var alt = d.alterations.sort(function(a,b){
@@ -379,14 +379,14 @@ function Comut() {
 						}
 				    })
                 .on('mouseover', _this.tooltip.show)
-                .on('mouseout', _this.tooltip.hide)		
+                .on('mouseout', _this.tooltip.hide)
                 .call( _this.drag );
-                
-            
-	    
+
+
+
             _this.demographics
                 .selectAll('.cell')
-                .data(_this.data.demographics.cells)      
+                .data(_this.data.demographics.cells)
                 .enter()
                 .filter(function (d) {
                     return _this.options.demofields.indexOf(d.fieldname) != -1 && genomic_samples.indexOf(d.sample)!=-1;
@@ -413,7 +413,7 @@ function Comut() {
                 .on('mouseout', _this.tooltip.hide)
                 .call(_this.drag);
 
-            
+
             var bar_enter = _this.bar.selectAll('.gene')
                 .data(data.alteration_count)
                 .enter()
@@ -478,7 +478,7 @@ function Comut() {
             var trs = getTranslation(_this.demoTitles.attr('transform'));
             trs[0] = trs[0] - _this.demoTitles.node().getBBox().width;
             _this.demoTitles.attr('transform', 'translate(' + trs[0] + ',' + trs[1] + ')');
-            
+
             _this.demoLegend.selectAll('.demolegend')
                 .data(_this.data.demographics.fields)
                 .enter()
@@ -491,14 +491,14 @@ function Comut() {
                     return 'translate(0,' + (_this.scales.demographicsY(d.field)) + ')';
                 })
                 .each(function (d, i, g) {
-                     
+
                     var offset = g[i].getBoundingClientRect().left;
                     d3.select(g[i]).html("").call(_this.scales.demoC[d.field].legend);
                     d3.select(g[i])
                         .selectAll('.cell').each(function (d, i, g) {
                             var e = d3.select(g[i]);
                             var t = getTranslation(e.attr('transform'));
-                            var current_left = g[i].getBoundingClientRect().left;			    
+                            var current_left = g[i].getBoundingClientRect().left;
                             var left = i > 0 ? g[i - 1].getBoundingClientRect().right + 10 : offset;
                             e.attr('transform', 'translate(' + (t[0] + left - current_left) + ',' + 0 + ')');
                         });
@@ -515,17 +515,17 @@ function Comut() {
                 .text(function (d) { return d; })
                 .attr('alignment-baseline', 'middle')
                 .attr('transform', 'rotate(-90)');
-            
+
             _this.zoom.scaleTo(_this.grid, _this.zoom.scaleExtent()[0]);
             //_this.sort();
         }
 
         function zoomed() {
-            
+
             var t = d3.event.transform;
             _this.scales.gridX = rescaleOrdinalX(_this.scales.gridX, t);
             draw(0);
-             
+
         }
 
         function loadFile(e) {
@@ -533,11 +533,11 @@ function Comut() {
             if (!f) return;
             var reader = new FileReader();
             reader.onload = function () {
-					processTextData(reader.result,'File '+f.name);                
+					processTextData(reader.result,'File '+f.name);
             };
             reader.readAsText(f);
         }
-        
+
         function processTextData(d,filename){
         	//try parsing json first
         	try{
@@ -546,24 +546,24 @@ function Comut() {
         		if(json.scales) _this.scales = json.scales;
         		if(json.data) {
         			_this.data = json.data;
-        			associateDemographicsWithSamples();	
+        			associateDemographicsWithSamples();
 	             setupMutationFileDescription();
 	             setupDemographicFileDescription();
-   		          
-					setupDemographicsConfig();   		          
+
+					setupDemographicsConfig();
         		}
         		if(json.config){
         			setupMutationConfig();
         			setupAlterationConfig();
         		}
-        		
+
         	}
         	catch (e){
         		var rows = d.trim().split(/\r\n|[\r\n]/);
         		var header = rows[0].split('\t').map(function(e){return e.toLowerCase();});
         		if(header.indexOf('sample')>-1&&header.indexOf('gene')>-1&&header.indexOf('alteration')>-1&&header.indexOf('type')>-1){
         			processMutationData(d,filename);
-        			associateDemographicsWithSamples();	
+        			associateDemographicsWithSamples();
             		setupMutationFileDescription();
             		setupMutationConfig();
             		setupAlterationConfig();
@@ -578,7 +578,7 @@ function Comut() {
         	//find first line and see if it is a genomic file or demographic file
         }
         function processMutationData(d,datasource) {
-        	
+
         	var inputGenomicData = d.trim();
         	var delimiter = '\t';
         	//Step 1: Parse input genomic data from text box or flat file input (tab delimited) and convert into an array of JSON objects
@@ -586,26 +586,26 @@ function Comut() {
 		    if (inputDataObject == false) {
 		        return false;
 		    }
-		
+
 		    //Step 2: get list of unique gene names across the sample dataset
 		    var uniqGeneList = getGeneList(inputDataObject);
-		
+
 		    //Step 3: order this gene list in descending order of frequency of alterations in a gene
 		    var sortedGeneAltFreq = orderGeneList(uniqGeneList, inputDataObject);
-		
+
 		    //Step 4: get unique list of samples from the dataset
 		    var uniqSampleList = getSampleList(inputDataObject);
-		
+
 		    //Step 5: create 2D array containing genomic alteration status of each gene in the dataset for a given sample
 		    var mutMatrix = createSampleMutationArray(inputDataObject, sortedGeneAltFreq, uniqSampleList);
-		
+
 		    //Step 6: create modified input genomic data list to accomodate genes for a sample that have no alterations
 		    var completeGenomicData = populateNegatives(inputDataObject, uniqSampleList, uniqGeneList);
-		
+
 		    //Step 7: sort the mutation matrix recursively descending to get sample order
 		    var sampleMatrix = sortMutMatrix(mutMatrix);
-		    
-		    
+
+
             _this.data.genomic = {};
             _this.data.genomic.source = datasource;
             _this.data.genomic.sortedGenes = sortedGeneAltFreq;
@@ -616,11 +616,11 @@ function Comut() {
             _this.data.genomic.mutMatrixSampleOrder = mutMatrix.map(function(e){return e[e.length-1]; });
             _this.data.genomic.mutMatrixGeneOrder = sortedGeneAltFreq.map(function(e){ return e[0] });
             _this.data.genomic.alterationTypes = getAlterationTypes(completeGenomicData);
-            
+
             _this.data.genomic.alteration_count = sortedGeneAltFreq.map(function (e) {
                 return { key: e[0], value: e[1] };
             });
-            
+
         }
         function processDemographicData(d,datasource) {
             var textarr = d.trim().split(/\r\n|\r|\n/).map(function (e, i) {
@@ -628,16 +628,16 @@ function Comut() {
             });
             var headers = textarr[0];
             textarr = textarr.slice(1);
-            
+
             var fieldMap = {};
             headers.forEach(function (e, i) {
-            		fieldMap[e.toLowerCase()] = { field: e.toLowerCase(), index: i, values:[], fieldNameOrig: e }; 
+            		fieldMap[e.toLowerCase()] = { field: e.toLowerCase(), index: i, values:[], fieldNameOrig: e };
             });
             var arr = textarr.map(function (e, i) {
                 var row = {
                     celldata: {}
                 };
-                
+
                 $.each(fieldMap, function (k, v) {
                     row[v.field] = e[v.index];
                     row.celldata[k] = e[v.index];
@@ -652,10 +652,10 @@ function Comut() {
                 $.each(e.celldata, function (k, v) {
                     fieldMap[k].values.push(v);
                 });
-                
+
             });
-            
-            
+
+
             _this.data.demographics = {};
             _this.data.demographics.datasource = datasource;
             _this.data.demographics.samples = d3.nest().key(function (d) { return d.sample; }).entries(arr);
@@ -664,7 +664,7 @@ function Comut() {
             		 if(v.field != 'sample') return v;
             });
             _this.data.demographics.cells = cells;
-            
+
         }
         function associateDemographicsWithSamples(){
         	if(!_this.data.genomic){
@@ -673,7 +673,7 @@ function Comut() {
         	}
         	else if(_this.data.demographics){
         		_this.data.samples={}
-        		
+
         		$.each(_this.data.genomic.samples,function(sidx,sampleName){
         			var cells = _this.data.genomic.cells.filter(function(x){return x.sample==sampleName;});
         			var demographics = _this.data.demographics.cells.filter(function(x){return x.sample ==sampleName;});
@@ -692,16 +692,16 @@ function Comut() {
         			}
         		});
         	}
-        	
-        
-        
+
+
+
         }
         function configureWidget() {
         	  var demographicsToUse = _this.options.demofields;
         	  var genesToPlot = _this.options.genesToPlot;
         	  var options = _this.options;
-        	  
-				//First figure out which types of alterations are included in order to set the geometry appropriately        	  
+
+				//First figure out which types of alterations are included in order to set the geometry appropriately
         	  //convert the mutTypeEncoding keys and colors into matched arrays to create the color scale
 			   var mutTypes = Object.keys(options.mutTypeEncoding);
 				var colors = mutTypes.map(function (k) {
@@ -715,10 +715,10 @@ function Comut() {
 				}).sort(function(a,b){
 					var sortorder = a.legendOrder - b.legendOrder;
 					if(sortorder) return (sortorder);
-					return a.type.localeCompare(b.type); 
+					return a.type.localeCompare(b.type);
 				});
 				//convert the mutTypeEncoding colors and text to arrays in the order defined by options.legendOrder
-				 
+
 				 var legendEntries = mutTypeArray.reduce(function(output,curr){
 				 	var include = _this.data.genomic.alterationTypes.includes(curr.type);
 				 	if(include) {
@@ -730,8 +730,8 @@ function Comut() {
 				var legendColors = legendEntries.colors;
 				var legendText = legendEntries.text;
 
-         
-            
+
+
             var g = options.grid,
                 dh = (g.cellheight + g.padding) * demographicsToUse.length,
                 gw = (g.cellwidth + g.padding) * _this.data.genomic.samples.length,
@@ -739,12 +739,12 @@ function Comut() {
                 o = options.sampleLegend.height + options.innerLayout.margins,
                 h = gh + dh + g.cellheight + o;
             _this.scaleExtent = [1, 2];
-            if (gw > g.maxgridwidth) {               
-                gw = g.maxgridwidth;                
+            if (gw > g.maxgridwidth) {
+                gw = g.maxgridwidth;
                 _this.scaleExtent[0] = g.maxgridwidth / gw;
             }
             _this.zoom.scaleExtent(_this.scaleExtent);
-            
+
             var w = options.bar.width + options.geneLegend.width + gw + options.innerLayout.margins * 3 + g.cellwidth + options.colorLegend.width;
 
             _this.gridsize = { width: gw, height: gh };
@@ -759,27 +759,27 @@ function Comut() {
                                                .paddingInner(_this.options.grid.padding / _this.options.grid.cellheight);
             _this.demographics.attr('transform', 'translate(0,' + (gh + g.cellheight + o) + ')');
             _this.demoTitles.attr('transform', 'translate(' +(options.bar.width + options.geneLegend.width-5) +',' + (gh + g.cellheight + o) + ')');
-            
+
             _this.gridholder.attr('transform', 'translate(' + (options.bar.width + options.geneLegend.width + options.innerLayout.margins * 2) + ',0)');
-	        	
+
 	        _this.grid.attr('transform', 'translate(0,' + o + ')');
-	
+
 	        _this.bargraph.attr('transform', 'translate(' + options.bar.width + ',' + o + ')');
-	
+
 	        _this.geneLegend.attr('transform', 'translate(' + (options.bar.width + options.innerLayout.margins) + ',' + (o) + ')');
-	        
+
 	        _this.sampleLegend.attr('transform', 'translate(0,' + (o-options.innerLayout.margins) + ')' +
 	            ' scale(1,' + (options.sampleLegend.show ? 1:0) + ')');
-	            
+
 	     //if order information is present in the data, set the domain of the scales here.
 	     if(_this.data.geneorder) _this.scales.gridY.domain(_this.data.geneorder);
 	     if(_this.data.demoorder) _this.scales.demographicsY.domain(_this.data.demoorder);
 	     if(_this.data.sampleorder) _this.scales.gridX.domain(_this.data.sampleorder);
-            
-	    
-		
-		
-            
+
+
+
+
+
 	      _this.scales.legendColor = d3.scaleOrdinal().domain(legendText).range(legendColors);
 	      _this.scales.barX = d3.scaleLinear().domain([0, Math.max.apply(null, _this.data.genomic.alteration_count.map(function (x) { return x.value; })) * 1.25]).range([0, options.bar.width]);
 	      _this.legend = d3.legendColor().orient('vertical').shapeWidth(options.grid.cellwidth).shapeHeight(options.grid.cellheight).scale(_this.scales.legendColor);
@@ -795,11 +795,11 @@ function Comut() {
                     .shapeHeight(options.grid.cellheight)
                     .labelOffset(4)
                     .scale(_this.scales.demoC[d.field]);
-                                
+
             });
             _this.demoLegend.attr('transform','translate('+(gw+options.innerLayout.margins+g.cellwidth) + ','+(gh+g.cellheight+o)+')');
         }
-    
+
 
     this.randomize = function () {
         _this.scales.gridY.domain(shuffle(_this.scales.gridY.domain()));
@@ -808,7 +808,7 @@ function Comut() {
         _this.data.geneorder = _this.scales.gridY.domain();
         _this.data.demoorder = _this.scales.demographicsY.domain();
         draw(1000);
-        
+
     }
     this.sort = function (opts) {
         if (!opts) opts = { x: true, y: true };
@@ -823,7 +823,7 @@ function Comut() {
         if (opts.x) {
             sortByGeneOrder();
         }
-		  
+
         _this.data.geneorder = _this.scales.gridY.domain();
         _this.data.demoorder = _this.scales.demographicsY.domain();
         draw(1000);
@@ -848,13 +848,13 @@ function Comut() {
             			var x = _this.scales.gridX(d.sample);
             			e.attr('gx',x);
             		}
-            		
+
             		return 'translate(' + x + ',' + y + ')';
             }).each(function(d,i) {
             		var children = d3.selectAll(this.childNodes);
             		children.attr('width',_this.scales.gridX.bandwidth());
             	});
-            
+
         _this.demographics.selectAll('.cell')
             .transition()
             .duration(duration)
@@ -939,7 +939,7 @@ function Comut() {
             			return comparison * multiplier;
             		}
             		else return a.index-b.index;
-            }   
+            }
        });
        //if the row is already sorted and this is the first attempt, sort in the opposite order.
        sortedSampleOrder = sortedList.map(function(e){ return e.value; });
@@ -948,14 +948,14 @@ function Comut() {
        	return;
        }
        _this.scales.gridX.domain(sortedSampleOrder);
-       
+
         _this.data.sampleorder = _this.scales.gridX.domain();
        draw(1000);
 	}
     function sortByGeneOrder() {
     	//geneOrder is the current order of genes, as sorted by user or algorithmically
         var geneOrder = _this.scales.gridY.domain();
-        
+
         //_this.data.genomic.mutMatrix is a 2d matrix of alteration types- use this to look up whether alterations are present or not
         var sortedSampleOrder = _this.data.genomic.samples.sort(function (a, b) {
             for (var ii = 0; ii < geneOrder.length; ++ii) {
@@ -965,16 +965,16 @@ function Comut() {
             		//get index of gene within mutMatrix 2nd dimension
             		var g = geneOrder[ii];
                 var geneIndex = _this.data.genomic.mutMatrixGeneOrder.indexOf(g)
-             
+
                 var alterationA = _this.data.genomic.mutMatrix[sampleIndexA][geneIndex];
                 var alterationB = _this.data.genomic.mutMatrix[sampleIndexB][geneIndex];
-                
-                
+
+
                 if (alterationA && !alterationB) return -1;
                 if (alterationB && !alterationA) return 1;
             }
             return 0;
-            
+
         });
         _this.scales.gridX.domain(sortedSampleOrder);
         _this.data.sampleorder = _this.scales.gridX.domain();
@@ -998,7 +998,7 @@ function Comut() {
         return array;
     }
     function gridDragStart() {
-        
+
         _this.tooltip.hide();
         var dragTarget = d3.select(this).data()[0];
         d3.selectAll('.cell').filter(function (d) {
@@ -1025,16 +1025,16 @@ function Comut() {
         this.parentNode.appendChild(this);
     }
     function gridDrag(d){
-        
+
         var e = d3.select(this),
             dx=d3.event.dx,
             dy=d3.event.dy;
         var tr = e.attr('transform');
-        
+
         var x = parseFloat(e.attr('gx')) + dx,
               y = parseFloat(e.attr('gy')) + dy;
-           
-                    
+
+
         _this.grid.selectAll('.dragging-y').attr('transform', function (d) {
             var e = d3.select(this);
             var x = parseFloat(e.attr('gx'));
@@ -1073,16 +1073,16 @@ function Comut() {
         		return 'translate(' + (t[0]) + ',' + (t[1]+dy) + ')';
         	});
         _this.geneLegend.selectAll('.gene.dragging-y')
-        	.attr('y',y+ _this.scales.gridY.bandwidth() / 2);	
-        
-                    
-        
+        	.attr('y',y+ _this.scales.gridY.bandwidth() / 2);
+
+
+
         var X = _this.scales.gridX.domain().sort(function (a, b) {
             var ac = d.sample == a ? x : _this.scales.gridX(a);
             var bc = d.sample == b ? x : _this.scales.gridX(b);
             return ac - bc;
         });
-        
+
         var Y = _this.scales.gridY.domain().sort(function (a, b) {
             var ac = d.gene == a ? y : _this.scales.gridY(a);
             var bc = d.gene == b ? y : _this.scales.gridY(b);
@@ -1117,11 +1117,11 @@ function Comut() {
         if (redraw) {
             draw(0);
         }
-        
-        
+
+
     }
     function gridDragEnd() {
-        
+
         d3.selectAll('.dragging-y,.dragging-x').classed('dragging-y dragging-x', false);
         draw(0);
         _this.data.sampleorder = _this.scales.gridX.domain();
@@ -1131,7 +1131,7 @@ function Comut() {
     function getTranslation(transform) {
         //see http://stackoverflow.com/questions/38224875/replacing-d3-transform-in-d3-v4 for source
         // Create a dummy g for calculation purposes only. This will never
-        // be appended to the DOM and will be discarded once this function 
+        // be appended to the DOM and will be discarded once this function
         // returns.
         if (transform.substr(0,9)=='translate')
         {
@@ -1145,7 +1145,7 @@ function Comut() {
 
         // consolidate the SVGTransformList containing all transformations
         // to a single SVGTransform of type SVG_TRANSFORM_MATRIX and get
-        // its SVGMatrix. 
+        // its SVGMatrix.
         var matrix = g.transform.baseVal.consolidate().matrix;
 
         // As per definition values e and f are the ones for the translation.
@@ -1166,7 +1166,7 @@ function Comut() {
         var dx = t.x - tx;
         r[0] = x + dx + (original_range[0] - x) * f;
         r[1] = x + dx + (original_range[1] - x) * f;
-        
+
         if (r[0] > limit[0]) {
             var delta = r[0]-limit[0];
             r[0] = r[0] - delta;
@@ -1204,7 +1204,7 @@ function Comut() {
         _this.options.demofields = _this.data.demographics.fields.map(function (x) { return x.field; });
     }
     function setupMutationConfig(){
-    	var list = $('#gene-fields').empty(); 
+    	var list = $('#gene-fields').empty();
     	var genes = _this.data.genomic.genes.map(function(x){return x.key} ).sort();
     	$.each(genes, function(index,gene){
     		var d = $('<div>').appendTo(list);
@@ -1220,7 +1220,7 @@ function Comut() {
         var num = _this.data.demographics.fields.length;
         $.each(_this.data.demographics.fields, function (ii, v) {
 			   if (v.field == 'sample') return;
-			   
+
 			   var options;
 				if(v.options){
 					options = v.options;
@@ -1232,10 +1232,10 @@ function Comut() {
 					unique_values.forEach(function (e, i) {
 	                options.values.push({value: e, color:[360 / num * ii, 25+75 * (1-i / numvals), 25+75*(1-i/numvals) ] });
 	            });
-				}			   
-            
+				}
+
             var vals = $('<div>').hide();
-            
+
             options.values.forEach(function (e, i) {
                 vals.append($('<span>').text(e.value + ': '));
                 var cp = $('<input>', { class: 'colorpicker'}).data('value',e.value).appendTo(vals);
@@ -1253,7 +1253,7 @@ function Comut() {
             });
             vals.appendTo(d);
             $('<br>').appendTo(d);
-            
+
         });
     }
     function setupAlterationConfig(){
@@ -1263,7 +1263,7 @@ function Comut() {
         });
      }
     function updateOptions() {
-    	
+
     	//Update layout options
     	_this.options.grid.cellwidth = Number(_this.optionsEditor.gridCellWidth.val());
     	_this.options.grid.cellheight = Number(_this.optionsEditor.gridCellHeight.val());
@@ -1275,7 +1275,7 @@ function Comut() {
     	_this.options.sampleLegend.show = _this.optionsEditor.sampleLegendShow.prop('checked');
     	_this.options.sampleLegend.height = Number(_this.optionsEditor.sampleLegendHeight.val());
     	_this.options.innerLayout.margins = Number(_this.optionsEditor.innerMargins.val());
-        
+
         //Update alteration encoding
         $('.alteration-config').each(function(i,e){
         	e=$(e);
@@ -1283,11 +1283,11 @@ function Comut() {
         	_this.options.mutTypeEncoding[alteration].color=e.find('.colorpicker').val();
         	_this.options.mutTypeEncoding[alteration].text = e.find('.alteration-legend').val();
         });
-        
+
         //Update Demographic fields color and filter based on options gui values
         $('#demographics-fields .field').each(function (i, e) {
             e = $(e);
-            var values = [];                
+            var values = [];
              e.data('target').find('.colorpicker').each(function (ii, ee) {
                  ee = $(ee);
                  values[ii] = { value: ee.data('value'), color: '#' + ee.val() };
@@ -1295,20 +1295,20 @@ function Comut() {
              var i = e.data('index');
              _this.data.demographics.fields[i].options={ field: e.data('field'), values: values, display:e.prop('checked') };
         });
-        
+
         //demographics filter
         _this.options.demofields = _this.data.demographics.fields.reduce(function(arr, current){
         	var current_field = current.field;
         	if(current.options.display) arr.push(current_field);
         	return arr;
         },[]);
-        
+
         //gene filter
         _this.options.genesToPlot = _this.data.genomic.genes.reduce(function(arr,current_gene){
         	var current_opt = $('#gene-fields .gene-checkbox').filter(function(index,checkbox){ return $(checkbox).data('gene')==current_gene.key; });
         	if(current_opt.is(':checked')) arr.push(current_gene.key);
         	return arr;
-        },[]); 
+        },[]);
     }
 	function setupModeControls(){
 		//add div container for controls (eg interactive mode options)
@@ -1331,18 +1331,18 @@ function Comut() {
           .offset([-10, 0])
           .html(function (d) {
               var div = $('<div>');
-              
+
               var celldata = d.celldata;
               if (!celldata) {
                   celldata = { 'Sample': d.sample, 'Gene': d.gene };
               }
-              $.each(celldata, function (k, v) {                      
+              $.each(celldata, function (k, v) {
                     $('<span>', { class: 'tooltip-key' }).appendTo(div).text(k);
                     $('<span>', { class: 'tooltip-value' }).appendTo(div).text(v);
                     $('<br>').appendTo(div);
                 });
-              
-              
+
+
               $('<br>').appendTo(div);
 
               return div.html();
@@ -1355,14 +1355,14 @@ function Comut() {
         var downloadBackground = $('<div>',{class:'comut-download-background'}).appendTo(downloadOverlay);
         $('<div>',{class:'comut-download-box'}).appendTo(downloadOverlay).append(
             $('<a>', { class: 'file-download', download: 'comut.svg' }).text('Click here to save your file') );
-        
+
         var downloadSVG = $('<button>', { class: 'btn btn-default' }).text('Save SVG').on('click', function () {
             var svgstring = makeSVGString();
             var href = makeFile(svgstring,'text/svg');
             downloadOverlay.find('.file-download').attr('href', href).attr('download','comut.svg');
             downloadOverlay.show();
-            
-        }).appendTo($('.save-panel'));
+
+        }).appendTo($('.save-data'));
 	}
 	function makeSVGString(){
 		var svgstring = '<?xml version="1.0" standalone="no"?>\
@@ -1388,18 +1388,18 @@ function Comut() {
     function setData(m,d,datasource){
 		  if(m) {
 		  	processMutationData(m,datasource);
-		  	associateDemographicsWithSamples();	
+		  	associateDemographicsWithSamples();
           setupMutationFileDescription();
-          setupMutationConfig();   
+          setupMutationConfig();
 		  }
 		  if(d) {
 		  	processDemographicData(d,datasource);
-		  	associateDemographicsWithSamples();	
+		  	associateDemographicsWithSamples();
           setupDemographicFileDescription();
-	       setupDemographicsConfig();   		   
+	       setupDemographicsConfig();
 		  }
 	  };
-	  
+
 	  function saveData(event, datastruct){
 	  	  if(datastruct){
 	  	     datastruct.data = _this.data;
@@ -1422,9 +1422,9 @@ function Comut() {
 	  	  	  saveJSON(datastruct,'comut-config.json');
 	  	  }
 	  };
-	  function saveDataAndConfig(event){ 
+	  function saveDataAndConfig(event){
 	    var datastruct = {};
-	  	 datastruct = saveData(event, datastruct); 
+	  	 datastruct = saveData(event, datastruct);
 	  	 datastruct = saveConfig(event, datastruct);
 	  	 saveJSON(datastruct,'comut-state.json');
 	 };
@@ -1435,8 +1435,8 @@ function Comut() {
 		downloadOverlay.show();
 	 }
     return this;
-    
-    //function sorts samples based on a 2D mutation array for a predetermined order of genes and returns order of samples   
+
+    //function sorts samples based on a 2D mutation array for a predetermined order of genes and returns order of samples
     function sortMutMatrix(genomicMatrix) {
         var geneCount = genomicMatrix[0].length;
 
@@ -1461,7 +1461,7 @@ function Comut() {
         return get_sample_order(sortedData);
     }
 
-    //function to extract sorted sample names from the sorted sample matrix   
+    //function to extract sorted sample names from the sorted sample matrix
     function get_sample_order(sortedMatrix) {
         var samples = [];
         for (var x = 0; x < sortedMatrix.length; x++) {
@@ -1495,7 +1495,7 @@ function Comut() {
             //add sample name as the last element of the mutType array.
             mutTypeArr.push(item);
 
-            //iterate over each filtered genomic data item and update the mutType array    
+            //iterate over each filtered genomic data item and update the mutType array
             tempArr.forEach(function (gData, subindex) {
                 if (gData.gene != "") {
                 	var geneArrayPos = getIndexPos(gData.gene, geneList);;
@@ -1535,7 +1535,7 @@ function Comut() {
             var posGeneList = [];
             var negGeneList = [];
 
-            //iterate over each filtered genomic data item and update the mutType array    
+            //iterate over each filtered genomic data item and update the mutType array
             posGeneList = tempArr.map(function (gData, subindex) {
                 if (gData.gene != "") {
                     return gData.gene;
@@ -1608,7 +1608,7 @@ function Comut() {
     function sortJsonObj(jsonObj, sortOrder) {
         var retArr = [];
 
-        //convert the json object to array 
+        //convert the json object to array
         var retArr = [];
         for (var item in jsonObj) {
             retArr.push([item, jsonObj[item]]);
@@ -1687,9 +1687,9 @@ function Comut() {
 		var retInfo = {};
 		var nonstandardMutTypes=[];
 		for (var i = 1; i < rows.length; i++) {
-			var rowDataArr = rows[i];            
+			var rowDataArr = rows[i];
 			var jsonObj = { };
-			if (rowDataArr.length > 0) { // if row is empty exclude it				
+			if (rowDataArr.length > 0) { // if row is empty exclude it
 				for (j = 0; j < colNames.length; j++) {
 					if (rowDataArr[j] == undefined) { // if a field in a row is empty then put in a blank entry
 						jsonObj[colNames[j].toString().trim()] = '';
@@ -1705,7 +1705,7 @@ function Comut() {
                                 _this.options.mutTypeEncoding[inputMutType]={ "color": "#A2A2A2", "text": inputMutType,"legendOrder":100 };
                                 //_this.optionseditor.val(JSON.stringify(_this.options,null,2));
                                 addAlterationConfig(inputMutType,_this.options.mutTypeEncoding[inputMutType],$('#alteration-setup'));
-                                
+
                                 nonstandardMutTypes.push(rowDataArr[j].toString());
                             }
                             jsonObj[colNames[j].toString().trim()] = rowDataArr[j].toString().toLowerCase();
@@ -1713,7 +1713,7 @@ function Comut() {
                         else {
                             jsonObj[colNames[j].toString().trim()] = rowDataArr[j].toString();
                         }
-                        
+
                     }
                 }
 			}
@@ -1730,8 +1730,8 @@ function Comut() {
 			}
         }
 		if(nonstandardMutTypes.length>0){
-			alert('Non-standard mutation/alteration type(s)) detected: ' + nonstandardMutTypes.join(', ') + '. Use the option editor to configure these types. If they are due to typos in' +
-			'the data, please remedy and reload the text file.'  );
+			alert('Non-standard alteration type(s)) detected: ' + nonstandardMutTypes.join(', ') + '. Use the option editor to configure these types. If they are due to typos in' +
+			' the data, please remedy and reload the text file.'  );
 		}
 		var retArray = [];
 		var samples = Object.keys(retInfo);
@@ -1780,7 +1780,7 @@ function Comut() {
 	    var colorString = obj.color;
 	    if(colorString[0]=='#') colorString = colorString.slice(1);
 	    color.fromString(colorString);
-							          
+
 	}
 }
 
@@ -1826,7 +1826,7 @@ if (!Array.prototype.includes) {
         if (sameValueZero(o[k], searchElement)) {
           return true;
         }
-        // c. Increase k by 1. 
+        // c. Increase k by 1.
         k++;
       }
 
@@ -1846,7 +1846,7 @@ Array.prototype.equals = function (array) {
     if (!array)
         return false;
 
-    // compare lengths - can save a lot of time 
+    // compare lengths - can save a lot of time
     if (this.length != array.length)
         return false;
 
@@ -1855,13 +1855,13 @@ Array.prototype.equals = function (array) {
         if (this[i] instanceof Array && array[i] instanceof Array) {
             // recurse into the nested arrays
             if (!this[i].equals(array[i]))
-                return false;       
-        }           
-        else if (this[i] != array[i]) { 
+                return false;
+        }
+        else if (this[i] != array[i]) {
             // Warning - two different object instances will never be equal: {x:20} != {x:20}
-            return false;   
-        }           
-    }       
+            return false;
+        }
+    }
     return true;
 }
 // Hide method from for-in loops

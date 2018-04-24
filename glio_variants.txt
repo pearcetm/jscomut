@@ -1,163 +1,149 @@
-Sample	Gene	Alteration	Type
-4597	TERT	c.1-124C>T ;p.?	missense
-4597	PTEN	Deletion	del
-4597	RB1	Deletion	del
-6285	TP53	c.847C>T ;p.R283C	missense
-6285	BRAF	c.1799T>A ;p.V600E	missense
-6615	TERT	c.1-124C>T ;C228T	missense
-6615	RB1	c.2110_2112del ;p.704_704del	inframe
-6615	TP53	c.844C>T ;p.R282W	missense
-6622	BRAF	c.1799T>A ;p.V600E	missense
-6623	H3F3A	c.83A>T ;p.K28M	missense
-6623	TP53	c.817C>T ;p.R273C	missense
-6765	BRAF	c.1799T>A ;p.V600E	missense
-6957	BRAF	c.1799T>A ;p.V600E	missense
-7521	TP53	c.551_554delATAG ;p.D184fs*62	fs
-7521	H3F3A	c.83A>T ;p.K28M	missense
-7521	TP53	c.839G>A ;p.R280K	missense
-7521	DDX3X	Deletion	del
-7667	ATRX	c.2832_2836del ;p.E944fs	fs
-7667	H3F3A	c.103G>A ;p.G35R	missense
-7667	TP53	c.844C>T ;p.R282W	missense
-8271	PIK3CA	c.3140A>G ;p.H1047R	missense
-8271	IDH1	c.395G>A ;p.R132H	missense
-1002MB	DDX3X	deletion	del
-1008EG	EGFR	amp	amp
-2011PA	KIAA/BRAF	KIAA/BRAF fusion	fusion
-2012PA	KIAA/BRAF	KIAA/BRAF fusion	fusion
-2118PA	KIAA/BRAF	KIAA/BRAF fusion	fusion
-4526	TP53	c.329G>C ;p.R110P	missense
-4526	IDH1	c.395G>A ;p.R132H	missense
-4587	IDH1	c.394C>A ;p.R132S	missense
-4587	TP53	c.817C>T ;p.R273C	missense
-4587	RB1	c.1072C>T ;p.R358*	stop
-4588	TERT	c.1-124C>T ;p.?	missense
-4588	MET	c.504G>T ;p.E168D	missense
-4588	PIK3CA	c.3140A>T ;p.H1047L	missense
-4588	IDH1	c.395G>A ;p.R132H	missense
-4589	TP53	c.527_537del11 ;p.C176*	stop
-4589	NF1	c.3445A>G ;p.M1149V	missense
-4589	CDKN2A	deletion	del
-4590	TP53	c.413C>T ;p.A138V	missense
-4590	MET	c.1039G>A ;p.A347T	missense
-4590	ATRX	c.2711T>G ;p.L904*	stop
-4590	IDH1	c.395G>A ;p.R132H	missense
-4590	ATRX	c.3374_3379delCTGATA ;p.S1125*	stop
-4591	ATRX	c.3145dupA ;p.I1049fs	fs
-4591	TP53	c.627_628insCAGA ;p.N210Qfs	fs
-4591	IDH1	c.394C>G ;p.R132G	missense
-4591	TP53	c.613T>C ;p.Y205H	missense
-4591	TP53	c.614A>C ;p.Y205S	missense
-4591	CDKN2A	deletion	del
-4593	PTEN	c.769delT ;p.F257fs	fs
-4593	PIK3CA	c.1A>G ;p.M1V	missense
-4593	NF1	c.7300C>T ;p.Q2434*	stop
-4594	TERT	c.1-124C>T ;p.?	missense
-4594	EGFR	c.2318A>G ;p.H773R	missense
-4594	EGFR	amp	amp
-4594	EGFRvIII	deletion	del
-4594	CDKN2A	deletion	del
-4594	PTEN	deletion	del
-4595	TERT	c.1-146C>T ;p.?	missense
-4595	PTEN	Deletion	del
-4595	CDKN2A	Deletion	del
-4596	TP53	c.764T>G ;p.I255S	missense
-4596	ATRX	c.6545A>G ;p.K2182R	missense
-4596	IDH1	c.395G>A ;p.R132H	missense
-4598	TERT	c.1-124C>T ;p.?	missense
-4598	CDK6	c.659G>A ;p.R220H	missense
-4598	EGFR	c.368C>T ;p.S123F	stop
-4598	MET	amp	amp
-4598	EGFR	amp	amp
-4599	RB1	c.2107-1G>C ;p.?	splice
-4599	TERT	c.1-124C>T ;p.?	missense
-4599	PTEN	c.388C>T ;p.R130*	stop
-4599	TP53	c.706T>A ;p.Y236N	missense
-4599	EGFR	amp	amp
-4599	CDKN2A	deletion	del
-4600	ATRX	c.633-1G>A ;p.?	splice
-4600	ATRX	c.3133_3137delAAAAG ;p.K1045fs*1	fs
-4600	TP53	c.395A>G ;p.K132R	missense
-4600	TP53	c.277delC ;p.L93fs*30	fs
-4600	IDH1	c.395G>A ;p.R132H	missense
-4601	TERT	c.1-146C>T ;p.?	missense
-4601	EGFR	amp	amp
-4601	EGFRvIII	deletion	del
-4601	CDKN2A	deletion	del
-4601	PTEN	deletion	del
-4603	PTEN	c.448G>T ;p.E150*	stop
-4603	EGFR	amp	amp
-4603	CDKN2A	deletion	del
-4605	MYCN	c.816T>G ;p.D272E	missense
-4605	IDH1	c.395G>A ;p.R132H	missense
-4605	TP53	c.839G>A ;p.R280K	missense
-4605	ATRX	c.2788_2789delCT ;p.S930Ffs*7	fs
-4606	TERT	c.1-124C>T ;p.?	missense
-4606	IDH1	c.395G>A ;p.R132H	missense
-4608	CIC	c.2583C>A ;p.S861R	missense
-4608	KIAA/BRAF	KIAA/BRAF fusion	fusion
-4608	CDKN2A	Deletion	del
-4608	DDX3X	Deletion	del
-4732	TP53	c.584T>C ;p.I195T	missense
-4732	IDH2	c.515G>T ;p.R172M	missense
-4733	TERT	c.1-124C>T ;p.?	missense
-4733	ATRX	c.1928A>C ;p.E643A	missense
-4733	IDH1	c.395G>A ;p.R132H	missense
-4734	PTEN	c.209+1delGTAA ;p.?	splice
-4734	TERT	c.1-124C>T ;p.?	missense
-4734	TP53	c.472C>T ;p.R158C	missense
-4736	TP53	c.403T>C ;p.C135R	missense
-4736	IDH1	c.395G>A ;p.R132H	missense
-4736	ATRX	c.3461C>G ;p.S1154*	stop
-4736	TP53	c.306delC ;p.T102fs	fs
-4737	IDH1	c.395G>A ;p.R132H	missense
-4737	TP53	c.548C>G ;p.S183*	stop
-4738	TERT	c.1-124C>T ;p.?	missense
-4738	TP53	c.455C>G ;p.P152R	missense
-4738	CDK6	amp	amp
-4738	MYCN	amp	amp
-4740	TERT	c.1-124C>T ;p.?	missense
-4740	MET	c.504G>T ;p.E168D	missense
-4740	TP53	c.820G>A ;p.V274I	missense
-4741	TERT	c.1-124C>T ;p.?	missense
-4741	IDH1	c.395G>A ;p.R132H	missense
-4742	TERT	c.1-146C>T ;p.?	missense
-4742	NF1	c.420_428delGGTTTTATT ;p.141_143delVLF	inframe
-4742	TP53	c.761T>C ;p.I254T	missense
-4742	TP53	c.455C>T ;p.P152L	missense
-4742	IDH1	c.395G>A ;p.R132H	missense
-4742	TP53	c.743G>A ;p.R248Q	missense
-4743	IDH1	c.395G>A ;p.R132H	missense
-4743	CIC	c.637C>T ;p.R213W	missense
-4745	PTCH1	c.3911_3912delAC ;p.D1304Afs	fs
-4745	IDH1	c.395G>A ;p.R132H	missense
-4745	TP53	c.701A>G ;p.Y234C	missense
-4746	ATRX	c.2978delA ;p.K993fs	fs
-4746	TP53	c.524G>A ;p.R175H	missense
-4747	TP53	c.395A>G ;p.K132R	missense
-4747	ATRX	c.2216_2217delAA ;p.K739Rfs	fs
-4747	IDH1	c.395G>A ;p.R132H	missense
-4752	NF2	c.1018G>A ;p.A340T	missense
-4752	H3F3A	c.83A>T ;p.K28M	missense
-4752	MET	c.40C>T ;p.L14F	missense
-4752	TP53	c.742C>T ;p.R248W	missense
-4753	PIK3CA	c.1633G>A ;p.E545K	missense
-4753	IDH1	c.395G>A ;p.R132H	missense
-4753	TP53	c.817C>T ;p.R273C	missense
-4754	TP53	c.580C>T ;p.L194F	missense
-4754	IDH1	c.395G>A ;p.R132H	missense
-4755	TP53	c.527G>A ;p.C176Y	missense
-4755	IDH1	c.395G>A ;p.R132H	missense
-4755	TP53	c.817C>T ;p.R273C	missense
-4756	NF2	c.447+1G>A ;p.?	splice
-4758	MYCN	c.1093C>A ;p.P365T	missense
-4759	AKT1	c.49G>A ;p.E17K	missense
-4760	NF2	c.1341-2A>G ;p.?	splice
-4822	BRAF	c.1799T>A ;p.V600E	missense
-888A2	TP53	c.919+1G>A ;p.?	splice
-888A2	NF1	c.528T>A ;p.D176E	missense
-888A2	IDH1	c.394C>A ;p.R132S	missense
-970B1	ATRX	c.2648_2651delAAGA ;p.Q883Rfs	fs
-970B1	IDH1	c.395G>A ;p.R132H	missense
-970B1	TP53	c.G638A ;p.R213Q	missense
-970B1	TP53	c.G644T ;p.S215I	missense
+Sample	Gene	Alteration	Type		
+4526	TP53	c.329G>C ;p.R110P	missense		
+4526	IDH1	c.395G>A ;p.R132H	missense		
+4587	IDH1	c.394C>A ;p.R132S	missense		
+4587	TP53	c.817C>T ;p.R273C	missense		
+4587	RB1	c.1072C>T ;p.R358*	stop		
+4588	TERT	c.1-124C>T ;p.?	promoter		
+4588	MET	c.504G>T ;p.E168D	missense		
+4588	PIK3CA	c.3140A>T ;p.H1047L	missense		
+4588	IDH1	c.395G>A ;p.R132H	missense		
+4589	TP53	c.527_537del11 ;p.C176*	stop		
+4589	NF1	c.3445A>G ;p.M1149V	missense		
+4589	CDKN2A	deletion	del		
+4590	TP53	c.413C>T ;p.A138V	missense		
+4590	MET	c.1039G>A ;p.A347T	missense		
+4590	ATRX	c.2711T>G ;p.L904*	stop		
+4590	IDH1	c.395G>A ;p.R132H	missense		
+4590	ATRX	c.3374_3379delCTGATA ;p.S1125*	stop		
+4591	ATRX	c.3145dupA ;p.I1049fs	fs		
+4591	TP53	c.627_628insCAGA ;p.N210Qfs	fs		
+4591	IDH1	c.394C>G ;p.R132G	missense		
+4591	TP53	c.613T>C ;p.Y205H	missense		
+4591	TP53	c.614A>C ;p.Y205S	missense		
+4591	CDKN2A	deletion	del		
+4593	PTEN	c.769delT ;p.F257fs	fs		
+4593	PIK3CA	c.1A>G ;p.M1V	missense		
+4593	NF1	c.7300C>T ;p.Q2434*	stop		
+4594	TERT	c.1-124C>T ;p.?	promoter		
+4594	EGFR	c.2318A>G ;p.H773R	missense		
+4594	EGFR	amp	amp		
+4594	EGFRvIII	deletion	del		
+4594	CDKN2A	deletion	del		
+4594	PTEN	deletion	del		
+4595	TERT	c.1-146C>T ;p.?	promoter		
+4595	PTEN	Deletion	del		
+4595	CDKN2A	Deletion	del		
+4596	TP53	c.764T>G ;p.I255S	missense		
+4596	ATRX	c.6545A>G ;p.K2182R	missense		
+4596	IDH1	c.395G>A ;p.R132H	missense		
+4597	TERT	c.1-124C>T ;p.?	promoter		
+4597	PTEN	Deletion	del		
+4597	RB1	Deletion	del		
+4597	IDH2	Deletion	del		
+4598	TERT	c.1-124C>T ;p.?	promoter		
+4598	CDK6	c.659G>A ;p.R220H	missense		
+4598	EGFR	c.368C>T ;p.S123F	stop		
+4598	MET	amp	amp		
+4598	EGFR	amp	amp		
+4599	RB1	c.2107-1G>C ;p.?	splice		
+4599	TERT	c.1-124C>T ;p.?	promoter		
+4599	PTEN	c.388C>T ;p.R130*	stop		
+4599	TP53	c.706T>A ;p.Y236N	missense		
+4600	ATRX	c.633-1G>A ;p.?	splice		
+4600	ATRX	c.3133_3137delAAAAG ;p.K1045fs*1	fs		
+4600	TP53	c.395A>G ;p.K132R	missense		
+4600	TP53	c.277delC ;p.L93fs*30	fs		
+4600	IDH1	c.395G>A ;p.R132H	missense		
+4601	TERT	c.1-146C>T ;p.?	promoter		
+4601	EGFR	amp	amp		
+4601	EGFRvIII	deletion	del		
+4601	CDKN2A	deletion	del		
+4601	PTEN	deletion	del		
+4603	PTEN	c.448G>T ;p.E150*	stop		
+4603	EGFR	amp	amp		
+4603	CDKN2A	deletion	del		
+4605	MYCN	c.816T>G ;p.D272E	missense		
+4605	IDH1	c.395G>A ;p.R132H	missense		
+4605	TP53	c.839G>A ;p.R280K	missense		
+4605	ATRX	c.2788_2789delCT ;p.S930Ffs*7	fs		
+4606	TERT	c.1-124C>T ;p.?	promoter		
+4606	IDH1	c.395G>A ;p.R132H	missense		
+4608	CIC	c.2583C>A ;p.S861R	missense		
+4608	KIAA/BRAF	KIAA/BRAF fusion	fusion		
+4608	CDKN2A	Deletion	del		
+4608	DDX3X	Deletion	del		
+4732	TP53	c.584T>C ;p.I195T	missense		
+4732	IDH2	c.515G>T ;p.R172M	missense		
+4733	TERT	c.1-124C>T ;p.?	promoter		
+4733	ATRX	c.1928A>C ;p.E643A	missense		
+4733	IDH1	c.395G>A ;p.R132H	missense		
+4736	TP53	c.403T>C ;p.C135R	missense		
+4736	IDH1	c.395G>A ;p.R132H	missense		
+4736	ATRX	c.3461C>G ;p.S1154*	stop		
+4736	TP53	c.306delC ;p.T102fs	fs		
+4737	IDH1	c.395G>A ;p.R132H	missense		
+4737	TP53	c.548C>G ;p.S183*	stop		
+4738	TERT	c.1-124C>T ;p.?	promoter		
+4738	TP53	c.455C>G ;p.P152R	missense		
+4738	CDK6	amp	amp		
+4738	MYCN	amp	amp		
+4740	TERT	c.1-124C>T ;p.?	promoter		
+4740	MET	c.504G>T ;p.E168D	missense		
+4740	TP53	c.820G>A ;p.V274I	missense		
+4741	TERT	c.1-124C>T ;p.?	promoter		
+4741	IDH1	c.395G>A ;p.R132H	missense		
+4742	TERT	c.1-146C>T ;p.?	promoter		
+4742	NF1	c.420_428delGGTTTTATT ;p.141_143delVLF	inframe		
+4742	TP53	c.761T>C ;p.I254T	missense		
+4742	TP53	c.455C>T ;p.P152L	missense		
+4742	IDH1	c.395G>A ;p.R132H	missense		
+4742	TP53	c.743G>A ;p.R248Q	missense		
+4743	IDH1	c.395G>A ;p.R132H	missense		
+4743	CIC	c.637C>T ;p.R213W	missense		
+4745	PTCH1	c.3911_3912delAC ;p.D1304Afs	fs		
+4745	IDH1	c.395G>A ;p.R132H	missense		
+4745	TP53	c.701A>G ;p.Y234C	missense		
+4746	ATRX	c.2978delA ;p.K993fs	fs		
+4746	TP53	c.524G>A ;p.R175H	missense		
+4747	TP53	c.395A>G ;p.K132R	missense		
+4747	ATRX	c.2216_2217delAA ;p.K739Rfs	fs		
+4747	IDH1	c.395G>A ;p.R132H	missense		
+4752	NF2	c.1018G>A ;p.A340T	missense		
+4752	H3F3A	c.83A>T ;p.K28M	missense		
+4752	MET	c.40C>T ;p.L14F	missense		
+4752	TP53	c.742C>T ;p.R248W	missense		
+4753	PIK3CA	c.1633G>A ;p.E545K	missense		
+4753	IDH1	c.395G>A ;p.R132H	missense		
+4753	TP53	c.817C>T ;p.R273C	missense		
+4754	TP53	c.580C>T ;p.L194F	missense		
+4754	IDH1	c.395G>A ;p.R132H	missense		
+4755	TP53	c.527G>A ;p.C176Y	missense		
+4755	IDH1	c.395G>A ;p.R132H	missense		
+4755	TP53	c.817C>T ;p.R273C	missense		
+4756	NF2	c.447+1G>A ;p.?	splice		
+4758	MYCN	c.1093C>A ;p.P365T	missense		
+4759	AKT1	c.49G>A ;p.E17K	missense		
+4760	NF2	c.1341-2A>G ;p.?	splice		
+4822	BRAF	c.1799T>A ;p.V600E	missense		
+6623	H3F3A	c.83A>T ;p.K28M	missense		
+6623	TP53	c.817C>T ;p.R273C	missense		
+7521	TP53	c.551_554delATAG ;p.D184fs*62	fs		
+7521	H3F3A	c.83A>T ;p.K28M	missense		
+7521	TP53	c.839G>A ;p.R280K	missense		
+7521	DDX3X	Deletion	del		
+7667	ATRX	c.2832_2836del ;p.E944fs	fs		
+7667	H3F3A	c.103G>A ;p.G35R	missense		
+7667	TP53	c.844C>T ;p.R282W	missense		
+1002MB	DDX3X	deletion	del		
+1008EG	EGFR	amp	amp		
+2011PA	KIAA/BRAF	KIAA/BRAF fusion	fusion		
+2012PA	KIAA/BRAF	KIAA/BRAF fusion	fusion		
+2118PA	KIAA/BRAF	KIAA/BRAF fusion	fusion		
+888A2	TP53	c.919+1G>A ;p.?	splice		
+888A2	NF1	c.528T>A ;p.D176E	missense		
+888A2	IDH1	c.394C>A ;p.R132S	missense		
+970B1	ATRX	c.2648_2651delAAGA ;p.Q883Rfs	fs		
+970B1	IDH1	c.395G>A ;p.R132H	missense		
+970B1	TP53	c.G638A ;p.R213Q	missense		
+970B1	TP53	c.G644T ;p.S215I	missense		
