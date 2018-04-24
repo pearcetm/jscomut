@@ -493,7 +493,7 @@ function Comut() {
                 .each(function (d, i, g) {
                      
                     var offset = g[i].getBoundingClientRect().left;
-                    d3.select(g[i]).call(_this.scales.demoC[d.field].legend);
+                    d3.select(g[i]).html("").call(_this.scales.demoC[d.field].legend);
                     d3.select(g[i])
                         .selectAll('.cell').each(function (d, i, g) {
                             var e = d3.select(g[i]);
@@ -783,7 +783,7 @@ function Comut() {
 	      _this.scales.legendColor = d3.scaleOrdinal().domain(legendText).range(legendColors);
 	      _this.scales.barX = d3.scaleLinear().domain([0, Math.max.apply(null, _this.data.genomic.alteration_count.map(function (x) { return x.value; })) * 1.25]).range([0, options.bar.width]);
 	      _this.legend = d3.legendColor().orient('vertical').shapeWidth(options.grid.cellwidth).shapeHeight(options.grid.cellheight).scale(_this.scales.legendColor);
-	      _this.colorLegend.call(_this.legend).attr('transform','translate('+ (w-options.colorLegend.width) +','+ o +')');
+	      _this.colorLegend.html("").call(_this.legend).attr('transform','translate('+ (w-options.colorLegend.width) +','+ o +')');
 	      _this.scales.demoC = {};
             _this.data.demographics.fields.forEach(function (d) {
                 var range = d.options.values.map(function (x) { return x.color; });
