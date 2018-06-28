@@ -772,10 +772,38 @@ function Comut() {
 	            ' scale(1,' + (options.sampleLegend.show ? 1:0) + ')');
 
 	     //if order information is present in the data, set the domain of the scales here.
-	     if(_this.data.geneorder) _this.scales.gridY.domain(_this.data.geneorder);
-	     if(_this.data.demoorder) _this.scales.demographicsY.domain(_this.data.demoorder);
-	     if(_this.data.sampleorder) _this.scales.gridX.domain(_this.data.sampleorder);
-
+        if(_this.data.geneorder) {
+            //_this.scales.gridY.domain(_this.data.geneorder);
+            //Keep the existing order, with new ones at the end
+            var new_ordered_list=[];
+            var current_order=_this.data.geneorder;
+            var new_unordered_list=_this.scales.gridY.domain();
+            $.each(current_order,function(i,e){
+                if(new_unordered_list.indexOf(e)>-1) new_ordered_list.push(e);
+            });
+            $.each(new_unordered_list,function(i,e){
+                if(new_ordered_list.indexOf(e)==-1) new_ordered_list.push(e);
+            });
+            _this.scales.gridY.domain(new_ordered_list);
+            _this.data.geneorder = new_ordered_list;
+        }
+        if(_this.data.demoorder){
+            //Keep the existing order, with new ones at the end
+            var new_ordered_list=[];
+            var current_order=_this.data.demoorder;
+            var new_unordered_list=_this.scales.demographicsY.domain();
+            $.each(current_order,function(i,e){
+                if(new_unordered_list.indexOf(e)>-1) new_ordered_list.push(e);
+            });
+            $.each(new_unordered_list,function(i,e){
+                if(new_ordered_list.indexOf(e)==-1) new_ordered_list.push(e);
+            });
+            _this.scales.demographicsY.domain(new_ordered_list);
+            _this.data.demoorder = new_ordered_list;
+        }
+        if(_this.data.sampleorder){
+            _this.scales.gridX.domain(_this.data.sampleorder);
+        }
 
 
 
