@@ -1542,11 +1542,9 @@ function Comut() {
                         break;
                     }
                 }
-
-                i++
+                i++;
             }
         });
-
         return get_sample_order(sortedData);
     }
 
