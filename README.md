@@ -200,9 +200,9 @@ The first row of the file should contain the column names (gene, sample, type, a
 For example: 
 ```
 Sample      Gene      Type      Alteration
-Case1       braf      missense  V600E
+Case1       BRAF      missense  c.1799T>A;p.V600E
 Case2                                     
-Case3       rb1       fs        c.2657delG
+Case3       RB1       fs        c.2657delG
  ```
  
  All other non-altered data points will be automatically filled in.
