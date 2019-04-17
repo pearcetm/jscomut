@@ -5,6 +5,9 @@ This guide contains information for:
 - [developers](#for-developers): how to add the widget and interact with it using javascript
 - [users](#for-users): how to use the widget to interact with your data
 
+# Demo site
+[Check it out in action!](https://pearcetm.github.io/jscomut)
+
 # For developers
 ## Adding the widget to a webpage
 ### Include the following scripts:
@@ -197,22 +200,25 @@ The first row of the file should contain the column names (gene, sample, type, a
 1) A sample with a genetic alteration
 2) Only a sample id (for samples with no detected alterations - only one row is needed)
 
+If a sample has multiple alterations, each one belongs on a separate row
+
 For example: 
 ```
 Sample      Gene      Type      Alteration
 Case1       BRAF      missense  c.1799T>A;p.V600E
 Case2                                     
 Case3       RB1       fs        c.2657delG
+Case3       RB1       del                 
  ```
  
  All other non-altered data points will be automatically filled in.
  
  ### Demographic data
- The first row of the file should contain the column names. The only required column is "sample", because this links the demographic data to the genomic data. Other columns can contain any type of desired data. The configuration process allows you to select which columns to use in the plot.
+ The first row of the file should contain the column names. The only required column is "sample", because this links the demographic data to the genomic data. Other columns can contain any type of desired data. The configuration process allows you to select which columns to use in the plot. The columns should be tab-separated, and the text in each header will become the label for the corresponding row of demographic data (non-tab white space is allowed).
  
  For example: 
 ```
-Sample      gender      tumor_site
+Sample      Gender      Tumor site
 Case1       female      thyroid
 Case2       male        bladder
 Case3       female      lung
