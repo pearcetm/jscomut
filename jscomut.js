@@ -1369,7 +1369,7 @@ function Comut() {
         $('.alteration-config').each(function(i,e){
         	e=$(e);
         	var alteration = e.data('alteration');
-        	_this.options.mutTypeEncoding[alteration].color=e.find('.colorpicker').val();
+        	_this.options.mutTypeEncoding[alteration].color='#'+e.find('.colorpicker').val();
         	_this.options.mutTypeEncoding[alteration].text = e.find('.alteration-legend').val();
         });
         
