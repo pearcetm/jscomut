@@ -177,7 +177,7 @@ function Comut() {
             .append('g')
             .attr('class', 'sample-legend')
             .attr('transform', 'translate(0,' + (o-options.innerLayout.margins) + ')' +
-            ' scale(1,' + (options.sampleLegend.show=='yes'?1:0) + ')');
+            ' scale(1,' + (options.sampleLegend.show ? 1 : 0) + ')');
 
         _this.colorLegend = _this.svg
             .append('g')

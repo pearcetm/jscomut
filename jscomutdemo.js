@@ -2,6 +2,10 @@ $(document).ready(function(){
     var comut = new Comut();
     comut.init({
         target: '#widget',
+		sampleLegend:{
+            height: 200,
+            show: false, //if falsey a scale of zero will hide the labels
+        },
     });
     $('<button>', { class: 'btn btn-default' }).text('Randomize').on('click', function () { comut.randomize(); }).appendTo('#test-buttons');
     $('<button>', { class: 'btn btn-default' }).text('Sort Samples').on('click', function () { comut.sort({ x: true }); }).appendTo('#test-buttons');

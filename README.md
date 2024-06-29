@@ -74,7 +74,7 @@ default_options = {
         sampleLegend:{
             
             height: 100,
-            show:'yes',//if not 'yes' a scale of zero will hide the labels
+            show: true, //if false (or falsey) a scale of zero will hide the labels
         },
         
         //colorLegend: defines the width of the legend of cell colors to the right of the grid.
